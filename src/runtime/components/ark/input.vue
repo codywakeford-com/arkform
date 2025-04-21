@@ -69,13 +69,12 @@
 import { inject, ref, computed, useSlots } from "vue"
 import { useArkFormStore } from "../../stores/forms"
 import { uuid } from "../../services/utils/uuid"
-import { mountInput } from "../../services/init/mountInput"
-import { componentsInit } from "../../services/init/componentsInit"
 import type { Slots } from "vue"
 import { useBus } from "../../composables/useBus"
 import { useArkForm } from "../../composables/useArkform"
 import { Type, type } from "arktype"
-import type { ArkVariants, StringVariants } from "~/types/arktype"
+import { componentsInit } from "../../services/init/componentsInit"
+import { mountInput } from "../../controllers/mount.controller"
 
 const $arkform = useArkForm()
 const formId = inject<Ref<string>>("form-id")
@@ -234,7 +233,7 @@ watch(
             models.validated.value = null
         }
     },
-    { immediate: true, deep: true }
+    { immediate: true, deep: true },
 )
 
 watch(
@@ -242,7 +241,7 @@ watch(
     (val) => {
         models.valid.value = val
     },
-    { immediate: true }
+    { immediate: true },
 )
 
 watch(
@@ -250,7 +249,7 @@ watch(
     (val) => {
         models.errors.value = val.value
     },
-    { immediate: true }
+    { immediate: true },
 )
 </script>
 

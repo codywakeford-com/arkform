@@ -96,7 +96,7 @@ const $arkform = {
 
         if (type !== "group" || !groupId || !formId) {
             throw new Error(
-                `useGroup(): Invalid ID structure for "${id}", this is not a valid group ID.`
+                `useGroup(): Invalid ID structure for "${id}", this is not a valid group ID.`,
             )
         }
 

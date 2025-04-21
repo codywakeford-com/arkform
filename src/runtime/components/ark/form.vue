@@ -18,10 +18,10 @@
 import { provide, watch } from "vue"
 import { useArkFormStore } from "../../stores/forms"
 import { uuid } from "../../services/utils/uuid"
-import { mountForm } from "../../services/init/mountForm"
 import { submitForm } from "../../controllers/submitForm"
 import { useBus } from "../../composables/useBus"
 import { useArkForm } from "../../composables/useArkform"
+import { mountForm } from "../../controllers/mount.controller"
 
 const emit = defineEmits<{
     (e: "update:errors", value: string[]): void
@@ -86,7 +86,7 @@ watch(
             emit("update:validated", null)
         }
     },
-    { immediate: true, deep: true }
+    { immediate: true, deep: true },
 )
 
 watch(
@@ -94,7 +94,7 @@ watch(
     (val) => {
         emit("update:names", val)
     },
-    { immediate: true }
+    { immediate: true },
 )
 
 watch(
@@ -102,7 +102,7 @@ watch(
     (val) => {
         emit("update:errors", val)
     },
-    { immediate: true }
+    { immediate: true },
 )
 
 watch(
@@ -110,7 +110,7 @@ watch(
     (val) => {
         emit("update:modelValue", val)
     },
-    { immediate: true }
+    { immediate: true },
 )
 
 onMounted(() => {

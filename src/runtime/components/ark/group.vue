@@ -60,7 +60,7 @@ watch(
         emit("update:modelValue", getModel(groupId.value))
         emit("update:items", newVal.items)
     },
-    { immediate: true, deep: true }
+    { immediate: true, deep: true },
 )
 </script>
 
