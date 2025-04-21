@@ -1,6 +1,6 @@
 <template>
     <form
-        :data-ark-formid="formId"
+        :data-ark-form="name"
         @submit.prevent
         class="ark-form"
         :class="{
@@ -15,9 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { provide, watch } from "vue"
 import { useArkFormStore } from "../../stores/forms"
-import { uuid } from "../../services/utils/uuid"
 import { submitForm } from "../../controllers/submitForm"
 import { useBus } from "../../composables/useBus"
 import { useArkForm } from "../../composables/useArkform"
@@ -65,6 +63,7 @@ interface Props {
     validation?: ValidationType
     reset?: boolean
     id?: string
+    name?: string
     modelValue?: any
     state?: any
     errors?: string[]
@@ -83,10 +82,13 @@ const {
     state = {},
     errors = [],
     id = "",
+    name = "",
     modelValue = {},
 
     animation = "default",
 } = defineProps<Props>()
+
+provide("form-name", name)
 
 onMounted(() => {
     const onSubmit = () => {

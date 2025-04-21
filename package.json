@@ -40,7 +40,10 @@
     "dependencies": {
         "@nuxt/icon": "^1.12.0",
         "@nuxt/kit": "^3.16.2",
+        "@vitejs/plugin-vue": "^5.2.3",
+        "@vue/test-utils": "^2.4.6",
         "arktype": "^2.1.19",
+        "happy-dom": "^17.4.4",
         "mitt": "^3.0.1",
         "shiki": "^3.2.2",
         "vitepress": "^1.6.3"
@@ -53,8 +56,11 @@
         "@nuxt/test-utils": "^3.17.2",
         "@pinia/nuxt": "0.11.0",
         "@types/node": "latest",
+        "@vitest/ui": "^3.1.2",
         "changelogen": "^0.6.1",
+        "cypress": "^14.3.1",
         "eslint": "^9.24.0",
+        "jsdom": "^26.1.0",
         "nuxt": "^3.16.2",
         "pinia": "^3.0.2",
         "sass": "^1.86.3",

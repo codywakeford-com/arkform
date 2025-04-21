@@ -1,5 +1,5 @@
 <template>
-    <div data-ark="input" :class="{ errors: state.errors.value.length }" class="ark-input-wrapper">
+    <div :class="{ errors: state.errors.value.length }" class="ark-input-wrapper">
         <div class="ark-label-container">
             <label v-if="components.label" class="ark-label">
                 <component :is="components.label" />
@@ -20,13 +20,17 @@
             <textarea
                 v-if="textarea && !checkbox"
                 class="ark-textarea"
+                :name="name"
                 type="text"
                 @input="onInput()"
                 v-model="state.value.value"
                 v-bind="$attrs"
+                :data-ark-input="name"
             />
             <input
+                :data-ark-input="name"
                 class="ark-input"
+                :name="name"
                 @input="onInput()"
                 v-else
                 v-model="$arkform.useInput(inputId).value.value"
@@ -45,9 +49,9 @@
             <TransitionGroup
                 v-else
                 class="ark-errors"
-                ref="errorBoxRef"
                 name="list"
                 tag="ul"
+                :data-ark-errors="name"
                 @before-enter="defaultAnimation.beforeEnter"
                 @enter="defaultAnimation.enter"
                 @before-leave="defaultAnimation.beforeLeave"
@@ -67,12 +71,10 @@
 
 <script setup lang="ts">
 import { inject, ref, computed, useSlots } from "vue"
-import { useArkFormStore } from "../../stores/forms"
-import { uuid } from "../../services/utils/uuid"
 import type { Slots } from "vue"
 import { useBus } from "../../composables/useBus"
 import { useArkForm } from "../../composables/useArkform"
-import { Type, type } from "arktype"
+import { type } from "arktype"
 import { componentsInit } from "../../services/init/componentsInit"
 import { mountInput } from "../../controllers/mount.controller"
 import { defaultAnimation } from "../../controllers/animation.controller"
@@ -80,9 +82,6 @@ import { useInputId } from "../../composables/initId"
 
 const $arkform = useArkForm()
 const groupId = inject<Ref<string | null>>("group-id", ref(null))
-const $forms = useArkFormStore()
-const errorBoxRef = ref<null | HTMLElement>(null)
-
 const formId = inject<Ref<string>>("form-id")
 
 if (!formId) {

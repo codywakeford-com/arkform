@@ -1,5 +1,5 @@
 <template>
-    <button class="ark-submit" @click="handleClick()">
+    <button class="ark-submit" @click="handleClick()" :data-ark-submit="formName">
         <slot>Submit</slot>
     </button>
 </template>
@@ -17,6 +17,8 @@ interface Props {
     id?: "ark-submit"
 }
 const formId = inject<string>("form-id")
+const formName = inject<string>("form-name")
+
 const { id = "ark-submit" } = defineProps<Props>()
 
 function handleClick() {
