@@ -183,8 +183,6 @@ const $arkform = {
     },
 
     validate: (id: string): boolean => {
-        const $forms = useArkFormStore()
-
         if (!id) {
             console.error(`[$arkform.validate] id is invalid (${id})`)
             return false
@@ -225,7 +223,6 @@ export function useArkForm() {
 
 export function getInputsFromId(id: string): ComputedRef<ArkInputs> {
     return computed(() => {
-        const $forms = useArkFormStore()
         const $arkform = useArkForm()
 
         const { type, formId, groupId, inputId } = getIdsFromId(id)
@@ -263,7 +260,6 @@ export function getInputsFromId(id: string): ComputedRef<ArkInputs> {
     })
 }
 export function getInputIdsFromId(id: string): string[] {
-    const $forms = useArkFormStore()
     const $arkform = useArkForm()
 
     const { type, formId, groupId, inputId } = getIdsFromId(id)

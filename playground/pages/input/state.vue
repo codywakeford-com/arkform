@@ -7,13 +7,10 @@
                 v-model:errors="errors"
                 v-model:valid="valid"
                 v-model:validated="validated"
-                v-model:performance="perf"
                 v-model:id="id"
                 name="email"
                 ark=""
             ></ark-input>
-
-            <ark-input ark="" />
 
             <ark-submit>Submit</ark-submit>
         </ark-form>
@@ -26,7 +23,6 @@
                 <pre>v-model:state = {{ state }}</pre>
                 <pre>v-model:valid = {{ valid === null ? "null" : `${valid}` }}</pre>
                 <pre>v-model:validated = {{ validated === null ? "null" : validated }}</pre>
-                <pre>v-model:performance = {{ perf }}</pre>
             </div>
         </client-only>
     </div>

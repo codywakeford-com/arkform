@@ -48,10 +48,10 @@
                 ref="errorBoxRef"
                 name="list"
                 tag="ul"
-                @before-enter="beforeEnter"
-                @enter="enter"
-                @before-leave="beforeLeave"
-                @leave="leave"
+                @before-enter="defaultAnimation.beforeEnter"
+                @enter="defaultAnimation.enter"
+                @before-leave="defaultAnimation.beforeLeave"
+                @leave="defaultAnimation.leave"
             >
                 <li
                     class="ark-error"
@@ -75,13 +75,15 @@ import { useArkForm } from "../../composables/useArkform"
 import { Type, type } from "arktype"
 import { componentsInit } from "../../services/init/componentsInit"
 import { mountInput } from "../../controllers/mount.controller"
+import { defaultAnimation } from "../../controllers/animation.controller"
+import { useInputId } from "../../composables/initId"
 
 const $arkform = useArkForm()
-const formId = inject<Ref<string>>("form-id")
-const groupId = inject<string | null>("group-id", null)
-
+const groupId = inject<Ref<string | null>>("group-id", ref(null))
 const $forms = useArkFormStore()
 const errorBoxRef = ref<null | HTMLElement>(null)
+
+const formId = inject<Ref<string>>("form-id")
 
 if (!formId) {
     throw new Error("[Arkform] Missing <form-id> injection")
@@ -90,26 +92,26 @@ if (!formId) {
 const inputType = type("string")
 type ModelType = typeof inputType.infer
 
-const valid = defineModel<boolean | null>("valid", { required: true })
+const validModel = defineModel<boolean | null>("valid", { required: true })
 const modelValue = defineModel<any | null>({ required: true })
-const validated = defineModel<ModelType | null>("validated", { required: true })
-const errors = defineModel<string[]>("errors", { required: true })
-const id = defineModel<string>("id", { required: true })
+const validatedModel = defineModel<ModelType | null>("validated", { required: true })
+const errorsModel = defineModel<string[]>("errors", { required: true })
+const idModel = defineModel<string>("id", { required: true })
 const stateModel = defineModel<UseArkInput>("state", { required: true })
-const performance = defineModel<number>("performance", { required: true })
 
 const models = {
-    valid,
+    validModel,
     modelValue,
-    validated,
-    errors,
-    id,
+    validatedModel,
+    errorsModel,
+    idModel,
     stateModel,
-    performance,
 }
 
-const inputId = useState<string>(`input-${useId()}`, () => {
-    return uuid({ id: groupId || formId.value, add: "input" })
+const inputId = useInputId({
+    idModel,
+    groupId,
+    formId,
 })
 
 if (!inputId) {
@@ -121,7 +123,7 @@ const state = computed(() => {
 })
 
 const bus = useBus()
-models.id.value = inputId.value
+models.idModel.value = inputId.value
 
 const components = ref({
     label: null,
@@ -132,17 +134,19 @@ const components = ref({
 })
 
 interface Props {
+    name: string
     componentId?: "ark-input"
+
     ark?: string | string[]
     modelValue?: ModelType | null
     matches?: string
-    name: string
     slots?: Slots
     preset?: string | null
     textarea?: boolean
     optional?: boolean
     checkbox?: boolean
-    id?: string
+    validated?: null | ModelType
+    valid?: null | boolean
     errors?: string[]
 }
 
@@ -155,6 +159,10 @@ const {
     textarea = false,
     checkbox = false,
     optional = false,
+    valid = null,
+    validated = null,
+    errors = [],
+
     ark = [],
 } = defineProps<Props>()
 
@@ -177,79 +185,22 @@ function onInput() {
     }
 }
 
-const ANIMATION_TIME = 200
-
-function beforeEnter(el: Element) {
-    const element = el as HTMLElement
-    element.style.height = "0"
-    element.style.transform = "translateY(-25px)"
-    element.style.opacity = "0"
-}
-
-function enter(el: Element, done: () => void) {
-    const element = el as HTMLElement
-    const height = element.scrollHeight + "px"
-    element.style.transition = `all ${ANIMATION_TIME}ms ease`
-    requestAnimationFrame(() => {
-        element.style.height = height
-        element.style.transform = "translateY(-0px)"
-
-        element.style.opacity = "1"
-    })
-    setTimeout(() => {
-        done()
-    }, ANIMATION_TIME)
-}
-
-function beforeLeave(el: Element) {
-    const element = el as HTMLElement
-    element.style.height = element.scrollHeight + "px"
-    element.style.transform = "translateY(-0px)"
-    element.style.opacity = "1"
-}
-
-function leave(el: Element, done: () => void) {
-    const element = el as HTMLElement
-    element.style.transition = `all ${ANIMATION_TIME}ms ease`
-    requestAnimationFrame(() => {
-        element.style.height = "0"
-        element.style.transform = "translateY(-25px)"
-        element.style.opacity = "0"
-    })
-    setTimeout(() => {
-        done()
-    }, ANIMATION_TIME)
-}
-
 watch(
     () => $arkform.useInput(inputId.value),
-    (val) => {
-        models.modelValue.value = val.value
-        models.stateModel.value = { ...val }
+    (input) => {
+        models.modelValue.value = input.value
+        models.stateModel.value = { ...input }
 
-        if (val.valid.value === true) {
-            models.validated.value = $arkform.useInput(inputId.value).value.value
+        if (input.valid.value === true) {
+            models.validatedModel.value = input.value.value
         } else {
-            models.validated.value = null
+            models.validatedModel.value = null
         }
+
+        models.validModel.value = input.valid.value
+        models.errorsModel.value = input.errors.value
     },
     { immediate: true, deep: true },
-)
-
-watch(
-    $arkform.useInput(inputId.value).valid,
-    (val) => {
-        models.valid.value = val
-    },
-    { immediate: true },
-)
-
-watch(
-    () => $arkform.useInput(inputId.value).errors,
-    (val) => {
-        models.errors.value = val.value
-    },
-    { immediate: true },
 )
 </script>
 

@@ -6,19 +6,22 @@
 </template>
 
 <script setup lang="ts">
+import { useGroupId } from "../../composables/initId"
 import { getInputsFromId, useArkForm } from "../../composables/useArkform"
-import { mountInputGroup } from "../../services/init/mountInputGroup"
-import { uuid } from "../../services/utils/uuid"
+import { mountGroup } from "../../controllers/mount.controller"
 import { useArkFormStore } from "../../stores/forms"
 import { inject, provide, computed, watch } from "vue"
 const $arkform = useArkForm()
 
-const formId = inject<Ref<string>>("form-id")
-const groupId = useState<string>(`${useId()}`, () => {
-    return uuid({ id: formId?.value, add: "group" })
+const formId = inject<Ref<string>>("form-id") as Ref<string>
+
+const idModel = defineModel<string>("id", { required: true })
+
+const groupId = useGroupId({
+    idModel,
+    formId,
 })
 
-const $forms = useArkFormStore()
 const emit = defineEmits([
     "update:modelValue",
     "update:id",
@@ -39,7 +42,7 @@ const { crud = true, name } = defineProps<Props>()
 
 provide<Ref<string>>("group-id", groupId)
 emit("update:id", groupId)
-mountInputGroup({ groupName: name, formId: formId?.value, groupId: groupId.value })
+mountGroup({ groupName: name, formId: formId?.value, groupId: groupId.value })
 
 function getModel(id: string) {
     const inputs = getInputsFromId(id)

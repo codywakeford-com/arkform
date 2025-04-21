@@ -23,13 +23,25 @@ Always pass the `id` of the element your trying to operate on.
 ```typescript
 interface $Arkform {
     // Resets the element to the default state. 
+    // Can be used on input, group or form.
     reset: (id: string) => void
 
     // Clears all element errors.
+    // Can be used on input, group or form.
     clearErrors: (id: string) => void
 
     // Validates each input within element.
+    // Can be used on input, group or form.
     validate: (id: string) => void
+
+    // An object containing refs and computed refs for element state
+    useForm: (id: string) => ArkForm
+
+    // An object containing refs and computed refs for element state
+    useInput: (id: string) => ArkInput
+
+    // An object containing refs and computed refs for element state
+    useGroup: (id: string) => ArkGroup
 
     // Form specific functions
     form: {
@@ -50,7 +62,7 @@ interface $Arkform {
 }
 ```
 
-## Example Usage 
+## Minimal Example
 
 ```vue
 <template>
@@ -62,6 +74,7 @@ interface $Arkform {
 </template>
 
 <script lang="ts">
+const $arkform = useArkform()
 const formId = ref("")
 </script>
 ```

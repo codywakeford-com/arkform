@@ -22,31 +22,41 @@ import { submitForm } from "../../controllers/submitForm"
 import { useBus } from "../../composables/useBus"
 import { useArkForm } from "../../composables/useArkform"
 import { mountForm } from "../../controllers/mount.controller"
-
-const emit = defineEmits<{
-    (e: "update:errors", value: string[]): void
-    (e: "update:id", value: string): void
-    (e: "update:names", value: string[]): void
-    (e: "update:state", value: UseArkForm): void
-    (e: "update:modelValue", value: any): void
-    (e: "update:valid", value: boolean | null): void
-    (e: "update:validated", value: any | null): void
-    (e: "update:performance", value: number | null): void
-}>()
-
-const instanceId = useId()
-const formId = useState<string>(`form`, () => uuid())
-emit("update:id", formId.value)
-
-onServerPrefetch(() => {
-    emit("update:id", formId.value)
-})
+import { useFormModelSync } from "../../composables/useModelSync"
+import { useFormId } from "../../composables/initId"
 
 const $forms = useArkFormStore()
 const $arkform = useArkForm()
 const bus = useBus()
 
-provide<Ref<string>>("form-id", formId)
+const errorsModel = defineModel<string[]>("errors", { required: true })
+const idModel = defineModel<string>("id", { required: true })
+const namesModel = defineModel<string[]>("names", { required: true })
+const stateModel = defineModel<any>("state", { required: true })
+const modelVal = defineModel<any>()
+const validModel = defineModel<boolean | null>("valid", { required: true })
+const validatedModel = defineModel<any | null>("validated", { required: true })
+const performanceModel = defineModel<number>("performance", { required: true })
+
+const formId = useFormId({
+    idModel,
+})
+
+const formRef = computed(() => $arkform.useForm(formId.value))
+
+useFormModelSync({
+    formRef,
+    models: {
+        state: stateModel,
+        valid: validModel,
+        validated: validatedModel,
+        modelVal,
+        value: modelVal,
+        names: namesModel,
+        errors: errorsModel,
+    },
+})
+
 mountForm({ formId: formId.value })
 
 interface Props {
@@ -63,55 +73,20 @@ interface Props {
     validated?: any | null
     animation?: false | "default"
 }
+
 const {
     componentId = "ark-form",
     submit = null,
     reset = true,
+    valid = null,
+    validated = null,
+    state = {},
+    errors = [],
+    id = "",
+    modelValue = {},
 
     animation = "default",
 } = defineProps<Props>()
-
-watch(
-    () => $arkform.useForm(formId.value),
-    (val) => {
-        emit("update:state", { ...val })
-
-        emit("update:valid", val.valid.value)
-
-        console.log(val.valid.value)
-
-        if (val.valid.value === true) {
-            emit("update:validated", val.value.value)
-        } else {
-            emit("update:validated", null)
-        }
-    },
-    { immediate: true, deep: true },
-)
-
-watch(
-    $arkform.useForm(formId.value).names,
-    (val) => {
-        emit("update:names", val)
-    },
-    { immediate: true },
-)
-
-watch(
-    $arkform.useForm(formId.value).errors,
-    (val) => {
-        emit("update:errors", val)
-    },
-    { immediate: true },
-)
-
-watch(
-    $arkform.useForm(formId.value).value,
-    (val) => {
-        emit("update:modelValue", val)
-    },
-    { immediate: true },
-)
 
 onMounted(() => {
     const onSubmit = () => {
@@ -121,7 +96,7 @@ onMounted(() => {
         $arkform.useForm(formId.value).validation.value = "eager"
 
         const perf = Number((performance.now() - start).toFixed(6))
-        emit("update:performance", perf)
+        performanceModel.value = perf
     }
 
     const onInput = (input: any) => {
@@ -132,7 +107,7 @@ onMounted(() => {
         }
 
         const perf = Number((performance.now() - start).toFixed(4))
-        emit("update:performance", perf)
+        performanceModel.value = perf
     }
 
     bus.on(`${formId}:submit`, onSubmit)

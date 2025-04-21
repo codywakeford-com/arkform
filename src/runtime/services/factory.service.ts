@@ -1,4 +1,3 @@
-import type { Z } from "vitest/dist/chunks/reporters.d.CfRkRKN2.js"
 import type { Reactive } from "vue"
 import { formatArkValidators } from "./utils/formatArkValidators"
 

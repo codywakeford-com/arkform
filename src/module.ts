@@ -147,11 +147,6 @@ export default defineNuxtModule<ModuleOptions>({
 
         addImportsDir(resolve(__dirname, "runtime/composables"))
 
-        addPlugin({
-            src: resolver.resolve("./runtime/plugins/pinia"),
-            mode: "all",
-            order: -100, // lower runs earlier
-        })
         _nuxt.options.runtimeConfig.public.arkform = options
     },
 })

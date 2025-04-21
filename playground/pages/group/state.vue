@@ -30,6 +30,8 @@
 </template>
 
 <script setup lang="ts">
+import { useArkForm } from "../../../src/runtime/composables/useArkform"
+
 const $arkform = useArkForm()
 
 const id = ref("")
