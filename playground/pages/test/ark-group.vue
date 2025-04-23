@@ -8,6 +8,7 @@
                 v-model:validated="validated"
                 v-model:errors="errors"
                 v-model:id="id"
+                v-model:items="items"
                 v-model:names="names"
             >
                 <ark-input name="email" ark="string.email"></ark-input>
@@ -17,10 +18,12 @@
             </ark-group>
 
             <ark-submit>Submit</ark-submit>
+            <button id="add-items-button" @click="$arkform.group.add(id)">Add Item</button>
         </ark-form>
 
         <client-only>
             <div class="col">
+                <div id="items">{{ items }}</div>
                 <div id="id">{{ id }}</div>
                 <div id="model">{{ model }}</div>
                 <div id="valid">{{ `${valid}` }}</div>
@@ -33,11 +36,12 @@
 </template>
 
 <script setup lang="ts">
+const $arkform = useArkForm()
 const id = ref()
 const model = ref()
 const errors = ref()
+const items = ref()
 const valid = ref()
-const perf = ref()
 const names = ref()
 const validated = ref()
 const state = ref()

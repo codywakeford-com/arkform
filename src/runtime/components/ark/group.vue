@@ -35,26 +35,23 @@ const stateModel = defineModel<UseArkInput>("state", { default: null })
 const namesModel = defineModel<string[]>("names", { default: null })
 const validatedModel = defineModel<any | null>("validated")
 
-try {
-    provide<Ref<string>>("group-id", groupId)
-    mountGroup({ groupName: name, formId: formId?.value, groupId: groupId.value })
-    const groupRef = computed(() => $arkform.useGroup(groupId.value))
+provide<Ref<string>>("group-id", groupId)
+mountGroup({ groupName: name, formId: formId?.value, groupId: groupId.value })
 
-    useGroupModelSync({
-        groupRef,
-        models: {
-            validModel,
-            validatedModel,
-            errorsModel,
-            stateModel,
-            modelValue,
-            namesModel,
-            itemsModel,
-        },
-    })
-} catch (e) {
-    console.error(e)
-}
+const groupRef = computed(() => $arkform.useGroup(groupId.value))
+
+useGroupModelSync({
+    groupRef,
+    models: {
+        validModel,
+        validatedModel,
+        errorsModel,
+        stateModel,
+        modelValue,
+        namesModel,
+        itemsModel,
+    },
+})
 </script>
 
 <style scoped lang="scss"></style>

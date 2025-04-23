@@ -214,9 +214,27 @@ const $arkform = {
     },
 
     group: {
-        add: (id: string) => {},
-        remove: (id: string) => {},
-        edit: (id: string) => {},
+        add: (id: string, clearInputs: boolean = true) => {
+            const group = $arkform.useGroup(id)
+
+            if ($arkform.validate(id)) {
+                group.items.value.push(group.value.value)
+
+                const inputIds = getInputIdsFromId(id)
+
+                if (clearInputs) {
+                    inputIds.forEach((id) => {
+                        const input = $arkform.useInput(id)
+
+                        input.value.value = input.default.value
+                    })
+                }
+            }
+        },
+        remove: (id: string, index: number) => {
+            const group = $arkform.useGroup(id)
+            group.items.value.splice(index, 1)
+        },
     },
 }
 
@@ -272,7 +290,7 @@ export function getInputIdsFromId(id: string): string[] {
     }
 
     if (type === "group" && groupId) {
-        return Object.keys($arkform.useGroup(groupId).inputs)
+        return Object.keys($arkform.useGroup(groupId).inputs.value)
     }
 
     if (type === "form" && formId) {

@@ -105,7 +105,7 @@ interface UseGroupModelSync {
 }
 
 export const useGroupModelSync: Func<UseGroupModelSync> = async (P) => {
-    const { stateModel, validModel, modelValue, validatedModel, errorsModel } = P.models
+    const { stateModel, validModel, modelValue, validatedModel, itemsModel, errorsModel } = P.models
     const { groupRef } = P
 
     try {
@@ -116,6 +116,7 @@ export const useGroupModelSync: Func<UseGroupModelSync> = async (P) => {
 
                 modelValue.value = group.value
                 stateModel.value = { ...group }
+                itemsModel.value = group.items.value
 
                 if (group.valid.value === true) {
                     validatedModel.value = group.value.value
