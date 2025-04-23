@@ -9,8 +9,9 @@
                 name="messages"
                 v-model="group"
             >
-                <ark-input name="message2"></ark-input>
+                <ark-input ark="string>0" name="message2"></ark-input>
                 <ark-input name="message3"></ark-input>
+                <ark-email />
             </ark-group>
 
             <ark-submit>Submit</ark-submit>

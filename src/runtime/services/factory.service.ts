@@ -5,13 +5,14 @@ type FormFactory = {
     Params: {
         validation?: ValidationType
     } | void
-    Return: Reactive<ArkForm>
+    Return: ArkForm
 }
 
 export const formFactory: Func<FormFactory> = (P) => {
     const { validation } = P || {}
 
     const form = {
+        name: null,
         groups: {},
         inputs: {},
         validation: validation || "shy",
@@ -30,7 +31,7 @@ type InputFactory = {
         optional?: boolean
         preset?: boolean
     }
-    Return: Reactive<ArkInput>
+    Return: ArkInput
 }
 
 export const inputFactory: Func<InputFactory> = (P) => {
@@ -38,15 +39,15 @@ export const inputFactory: Func<InputFactory> = (P) => {
 
     const input = {
         name: name,
-
-        value: preset || value || null,
         errors: [],
         validation: validation || "shy",
         arkValidators: formatArkValidators({ ark: arkValidators }),
         optional: optional || false,
-        matches: matches || null,
         valid: null,
+        value: preset || value || null,
         default: preset || null,
+        matches: matches || null,
+        checked: false,
     }
 
     return reactive(input)
@@ -54,16 +55,16 @@ export const inputFactory: Func<InputFactory> = (P) => {
 
 interface GroupFactory {
     Params: {
-        name: string
+        name?: string | null
         validation?: ValidationType
     }
-    Return: Reactive<ArkInputGroup>
+    Return: ArkGroup
 }
 
 export const groupFactory: Func<GroupFactory> = (P) => {
     const { name, validation } = P
     const group = {
-        name,
+        name: name || null,
         inputs: {},
         items: [],
         validation: validation || "shy",

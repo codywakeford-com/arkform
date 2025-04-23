@@ -8,7 +8,7 @@
         }"
     >
         <div v-if="reset" class="ark-form-reset-button">
-            <button @click="$arkform.reset(formId)">reset</button>
+            <button @click="$arkform.reset(formId)" :data-ark-reset="name">reset</button>
         </div>
         <slot />
     </form>
@@ -27,14 +27,14 @@ const $forms = useArkFormStore()
 const $arkform = useArkForm()
 const bus = useBus()
 
-const errorsModel = defineModel<string[]>("errors", { required: true })
-const idModel = defineModel<string>("id", { required: true })
-const namesModel = defineModel<string[]>("names", { required: true })
-const stateModel = defineModel<any>("state", { required: true })
+const errorsModel = defineModel<string[]>("errors", { default: null })
+const idModel = defineModel<string>("id", { default: "" })
+const namesModel = defineModel<string[]>("names", { default: null })
+const stateModel = defineModel<any>("state", { default: null })
 const modelVal = defineModel<any>()
-const validModel = defineModel<boolean | null>("valid", { required: true })
-const validatedModel = defineModel<any | null>("validated", { required: true })
-const performanceModel = defineModel<number>("performance", { required: true })
+const validModel = defineModel<boolean | null>("valid", { default: null })
+const validatedModel = defineModel<any | null>("validated")
+const performanceModel = defineModel<number>("performance", { default: null })
 
 const formId = useFormId({
     idModel,
@@ -42,21 +42,19 @@ const formId = useFormId({
 
 const formRef = computed(() => $arkform.useForm(formId.value))
 
+mountForm({ formId: formId.value })
+
 useFormModelSync({
     formRef,
     models: {
-        state: stateModel,
-        valid: validModel,
-        validated: validatedModel,
+        stateModel,
+        validModel,
+        validatedModel,
         modelVal,
-        value: modelVal,
-        names: namesModel,
-        errors: errorsModel,
+        namesModel,
+        errorsModel,
     },
 })
-
-mountForm({ formId: formId.value })
-
 interface Props {
     componentId?: "ark-form"
     submit?: Function | null

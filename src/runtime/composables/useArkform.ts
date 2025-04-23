@@ -15,24 +15,13 @@ const $arkform = {
         const form = $forms.state[formId]
         if (!form) throw new Error(`useInput(): Form "${formId}" not found for "${id}"`)
 
-        if (groupId) {
-            const group = form.groups?.[groupId]
-            if (!group)
-                throw new Error(`useInput(): Group "${groupId}" not found in form "${formId}"`)
-            if (!group.inputs?.[inputId])
-                throw new Error(`useInput(): Input "${inputId}" not found in group "${groupId}"`)
-            return group.inputs[inputId]
-        }
+        const input = groupId ? form.groups?.[groupId]?.inputs?.[inputId] : form.inputs?.[inputId]
 
-        if (!form.inputs?.[inputId]) {
+        if (!input) {
             throw new Error(`useInput(): Input "${inputId}" not found in form "${formId}"`)
         }
 
-        const out = {
-            ...toRefs(form.inputs[inputId]),
-        }
-
-        return out
+        return toRefs(input) // now this will work beautifully
     },
 
     useForm(id: string): UseArkForm {
@@ -63,13 +52,19 @@ const $arkform = {
             const result: Record<string, any> = {}
 
             Object.values(inputs).forEach((input: any) => {
-                result[input.name] = input.value
+                const val = input.value ? input.value : null
+
+                result[input.name] = val
             })
 
             return result
         })
 
         const valid = computed(() => {
+            if (Object.values(inputs).every((input) => !input.checked)) {
+                return null
+            }
+
             return Object.values(inputs).every((input) => input.valid)
         })
 
@@ -105,12 +100,15 @@ const $arkform = {
             throw new Error(`useGroup(): Form "${formId}" not found for group "${groupId}"`)
         }
 
-        const group = form.groups?.[groupId]
+        const group = $forms.state[formId].groups[groupId]
+
         if (!group) {
             throw new Error(`useGroup(): Group "${groupId}" not found in form "${formId}"`)
         }
 
-        const inputs: ArkInputs = group.inputs
+        const inputs: ArkInputs = $forms.state[formId].groups[groupId].inputs
+
+        console.log(toRaw(inputs))
 
         const names = computed(() => {
             return Object.values(inputs).map((input: any) => input.name)
@@ -121,9 +119,11 @@ const $arkform = {
         })
 
         const valid = computed(() => {
-            return Object.values(inputs).every((input) => {
-                return input.valid === true
-            })
+            if (Object.values(inputs).every((input) => !input.checked)) {
+                return null
+            }
+
+            return Object.values(inputs).every((input) => input.valid)
         })
 
         const value = computed(() => {
@@ -140,14 +140,17 @@ const $arkform = {
             return valid.value ? value.value : null
         })
 
-        return {
-            ...toRefs(form.groups[groupId]),
+        const out = {
+            ...toRefs($forms.state[formId].groups[groupId]),
             names,
             value,
             errors,
             validated,
             valid,
         }
+
+        console.log(toRaw(out))
+        return out
     },
 
     clearInputs: (id: string) => {
@@ -274,16 +277,18 @@ export function getInputIdsFromId(id: string): string[] {
 
     if (type === "form" && formId) {
         const form = $arkform.useForm(formId)
-        let ids = [...Object.keys($arkform.useForm(formId).inputs.value)]
 
-        if (groupId) {
+        if (!form) return []
+
+        let ids = [...Object.keys(form.inputs.value)]
+
+        const groupIds = Object.keys(form.groups.value)
+
+        groupIds.forEach((id) => {
             const group = $arkform.useGroup(id)
-            for (let [grId, input] of Object.entries(group.inputs)) {
-                const group = $arkform.useGroup(grId)
 
-                ids.push(...Object.keys(group.inputs))
-            }
-        }
+            ids.push(...Object.keys(group.inputs.value))
+        })
 
         return ids
     }

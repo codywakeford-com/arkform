@@ -18,9 +18,8 @@ export const validateInput: Func<Z> = (P) => {
     const input = $arkform.useInput(id)
     let errors: string[] = []
 
-    // Fallback validator if none are defined
-    if (!input.arkValidators.value.length) {
-        input.arkValidators.value.push("string>0")
+    if (!input.arkValidators.value?.length) {
+        input.arkValidators.value?.push("string>0")
     }
 
     for (const ark of input.arkValidators.value) {
@@ -33,6 +32,7 @@ export const validateInput: Func<Z> = (P) => {
 
     input.errors.value.splice(0, input.errors.value.length, ...filtered)
     input.valid.value = filtered.length === 0
+    input.checked.value = true
 
     return input.valid.value
 }

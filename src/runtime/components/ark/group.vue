@@ -2,16 +2,21 @@
     <div class="ark-group">
         <slot />
     </div>
-    <!-- <ark-crud v-if="crud" /> -->
 </template>
 
 <script setup lang="ts">
 import { useGroupId } from "../../composables/initId"
-import { getInputsFromId, useArkForm } from "../../composables/useArkform"
+import { useArkForm } from "../../composables/useArkform"
+import { useGroupModelSync } from "../../composables/useModelSync"
 import { mountGroup } from "../../controllers/mount.controller"
-import { useArkFormStore } from "../../stores/forms"
 import { inject, provide, computed, watch } from "vue"
 const $arkform = useArkForm()
+
+interface Props {
+    name: string
+}
+
+const { name } = defineProps<Props>()
 
 const formId = inject<Ref<string>>("form-id") as Ref<string>
 
@@ -22,49 +27,34 @@ const groupId = useGroupId({
     formId,
 })
 
-const emit = defineEmits([
-    "update:modelValue",
-    "update:id",
-    "update:items",
-    "update:state",
-    "update:performance",
-    "update:names",
-    "update:valid",
-    "update:validated",
-])
+const validModel = defineModel<boolean | null>("valid")
+const modelValue = defineModel<any | null>()
+const errorsModel = defineModel<string[]>("errors", { default: null })
+const itemsModel = defineModel<any[]>("items", { default: null })
+const stateModel = defineModel<UseArkInput>("state", { default: null })
+const namesModel = defineModel<string[]>("names", { default: null })
+const validatedModel = defineModel<any | null>("validated")
 
-interface Props {
-    crud?: boolean
-    name: string
-}
+try {
+    provide<Ref<string>>("group-id", groupId)
+    mountGroup({ groupName: name, formId: formId?.value, groupId: groupId.value })
+    const groupRef = computed(() => $arkform.useGroup(groupId.value))
 
-const { crud = true, name } = defineProps<Props>()
-
-provide<Ref<string>>("group-id", groupId)
-emit("update:id", groupId)
-mountGroup({ groupName: name, formId: formId?.value, groupId: groupId.value })
-
-function getModel(id: string) {
-    const inputs = getInputsFromId(id)
-
-    const object: { [key: string]: any } = {}
-
-    Object.values(inputs.value).map((input) => {
-        object[input.name] = input.value
+    useGroupModelSync({
+        groupRef,
+        models: {
+            validModel,
+            validatedModel,
+            errorsModel,
+            stateModel,
+            modelValue,
+            namesModel,
+            itemsModel,
+        },
     })
-
-    return object
+} catch (e) {
+    console.error(e)
 }
-
-watch(
-    $arkform.useGroup(groupId.value),
-    (newVal) => {
-        emit("update:state", newVal)
-        emit("update:modelValue", getModel(groupId.value))
-        emit("update:items", newVal.items)
-    },
-    { immediate: true, deep: true },
-)
 </script>
 
 <style scoped lang="scss"></style>

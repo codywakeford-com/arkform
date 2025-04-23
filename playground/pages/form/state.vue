@@ -23,7 +23,7 @@
                 <pre>v-model:id = {{ formId }}</pre>
                 <pre>v-model:performance = {{ !perf ? "0.00" : perf }}ms</pre>
                 <pre>v-model = {{ form }}</pre>
-                <pre>v-model:valid = {{ valid === null ? "null" : valid }}</pre>
+                <pre>v-model:valid = {{ `${valid}` }}</pre>
                 <pre>v-model:validated = {{ validated === null ? "null" : validated }}</pre>
                 <pre>v-model:errors = {{ errors }}</pre>
                 <pre>v-model:names = {{ names }}</pre>
@@ -42,6 +42,8 @@ const perf = ref()
 const names = ref()
 const validated = ref()
 const state = ref()
+
+console.log(valid)
 </script>
 
 <style scoped lang="scss"></style>

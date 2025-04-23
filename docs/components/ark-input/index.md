@@ -4,7 +4,7 @@ import ExampleIframe from "../example-iframe.vue"
 
 # ArkInput
 
-A supercharged version of the native `<input />` element with all the accessibility and styling headaches already handled for you.
+The `<ark-input />` is a supercharged version of the native `<input />` element with validation, styling, animation and accessability handled out of the box.
 
 ### Descendents
 
@@ -62,11 +62,8 @@ By default the input will use a label with the name as it's value. This can be o
     <ark-help>Please enter a message.</ark-help>
 </ark-input>
 ```
-<iframe 
-  src="http://localhost:3000/input-with-help" 
-  width="100%"
-  style="border: none; border-radius: 6px; min-height: 225px;" 
-></iframe>
+
+<ExampleIframe url="/input-with-help" style="max-height: 200px;"/>
 
 Help message is displayed below the input element to give the user a hint.
 
@@ -163,7 +160,7 @@ For ease of use there are many wrappers that preconfigure some inputs. View all 
 
 // is equivilent to
 
-<ark-input name="password" :ark="['list of password regex rules']" />
+<ark-input name="password" :ark="passwordRegexList" />
 ```
 
 Read more about password and their validation [here](./ark-password)

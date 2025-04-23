@@ -8,9 +8,9 @@
         matches="confirm-password"
     >
         <ark-aft>
-            <div class="flex-center" @click="generatePassword(id)">
-                <Icon class="suggest-aft" name="material-symbols:settings-suggest" v-if="suggest" />
-            </div>
+            <!-- <div class="flex-center" @click="generatePassword(id)"> -->
+            <!--     <Icon class="suggest-aft" name="material-symbols:settings-suggest" v-if="suggest" /> -->
+            <!-- </div> -->
 
             <div class="flex-center" @click="toggleRef">
                 <Icon v-if="viewPassword" name="streamline:visible-solid" />

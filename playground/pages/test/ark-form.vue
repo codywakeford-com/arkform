@@ -21,20 +21,13 @@
 
         <client-only>
             <div class="col">
-                <pre data-cy="form-id">v-model:id =
-                <div>
-                    {{ formId }}
-                </div>
-                </pre>
-                <pre data-cy="performance">v-model:performance = {{ !perf ? "0.00" : perf }}ms</pre>
-                <pre data-cy="form">v-model = {{ form }}</pre>
-                <pre data-cy="valid">v-model:valid = {{ valid === null ? "null" : valid }}</pre>
-                <pre data-cy="validated">
-v-model:validated = {{ validated === null ? "null" : validated }}</pre
-                >
-                <pre data-cy="errors">v-model:errors = {{ errors }}</pre>
-                <pre data-cy="names">v-model:names = {{ names }}</pre>
-                <pre data-cy="state">v-model:state = {{ state }}</pre>
+                <div id="formId">{{ formId }}</div>
+                <div id="performance">{{ perf }}</div>
+                <div id="model">{{ form }}</div>
+                <div id="valid">{{ `${valid}` }}</div>
+                <div id="validated">{{ `${JSON.stringify(validated)}` }}</div>
+                <div id="errors">{{ errors }}</div>
+                <div id="state">{{ state }}</div>
             </div>
         </client-only>
     </div>

@@ -1,4 +1,3 @@
-import { useArkForm } from "../composables/useArkform"
 import { inputFactory, formFactory, groupFactory } from "../services/factory.service"
 import { getIdsFromId } from "../services/utils/uuid"
 import { useArkFormStore } from "../stores/forms"
@@ -7,9 +6,9 @@ type MountInput = {
     Params: {
         id: string
         arkValidators: any | string
-        matches: string | undefined
+        matches?: string
         inputName: string
-        optional: boolean | undefined
+        optional?: boolean
         preset?: any | null
     }
     Return: void
@@ -23,7 +22,6 @@ export const mountInput: Func<MountInput> = (P) => {
     }
 
     try {
-        const $arkform = useArkForm()
         const $forms = useArkFormStore()
 
         const { formId, groupId, inputId } = getIdsFromId(id)
@@ -40,10 +38,11 @@ export const mountInput: Func<MountInput> = (P) => {
             preset,
         })
 
-        if (groupId) {
-            const group = $arkform.useGroup(groupId)
-            group.inputs[inputId]
+        console.log("input object", inputData)
 
+        if (groupId) {
+            $forms.state[formId].groups[groupId].inputs[inputId] = inputData
+            console.log("Input mounted:", $forms.state[formId].groups[groupId].inputs[inputId])
             return
         }
 
@@ -77,18 +76,19 @@ type MountGroup = {
     Params: {
         formId: string | undefined
         groupId: string
-        groupName: string
+        groupName: string | null
     }
     Return: void
 }
 
 export const mountGroup: Func<MountGroup> = (P) => {
-    return
     const { formId, groupId, groupName } = P
 
     if (!formId || !groupId) return
 
     const $forms = useArkFormStore()
+    const group = groupFactory({ name: groupName })
 
-    $forms.setGroup(groupId, groupFactory({ name: groupName }))
+    $forms.state[formId].groups[groupId] = group
+    console.log("group mounted:", $forms.state[formId].groups[groupId])
 }

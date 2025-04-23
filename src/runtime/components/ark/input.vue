@@ -1,5 +1,5 @@
 <template>
-    <div :class="{ errors: state.errors.value.length }" class="ark-input-wrapper">
+    <div :class="{ errors: inputRef?.errors?.value?.length }" class="ark-input-wrapper">
         <div class="ark-label-container">
             <label v-if="components.label" class="ark-label">
                 <component :is="components.label" />
@@ -8,32 +8,21 @@
             <label
                 v-else
                 class="ark-label"
-                :class="{ error: state.errors.value.length }"
+                :class="{ error: inputRef.errors?.value?.length }"
                 :for="name"
             >
                 {{ name }}:
             </label>
         </div>
 
-        <div class="ark-input-container" :class="{ error: state.errors.value.length }">
+        <div class="ark-input-container" :class="{ error: inputRef.errors?.value?.length }">
             <component :is="components.fore" />
-            <textarea
-                v-if="textarea && !checkbox"
-                class="ark-textarea"
-                :name="name"
-                type="text"
-                @input="onInput()"
-                v-model="state.value.value"
-                v-bind="$attrs"
-                :data-ark-input="name"
-            />
             <input
                 :data-ark-input="name"
                 class="ark-input"
                 :name="name"
                 @input="onInput()"
-                v-else
-                v-model="$arkform.useInput(inputId).value.value"
+                v-model="inputRef.value.value"
                 v-bind="$attrs"
             />
             <component :is="components.aft" />
@@ -59,7 +48,7 @@
             >
                 <li
                     class="ark-error"
-                    v-for="(error, index) in $arkform.useInput(inputId).errors.value"
+                    v-for="(error, index) in inputRef?.errors?.value"
                     :key="index"
                 >
                     {{ error }}
@@ -79,6 +68,7 @@ import { componentsInit } from "../../services/init/componentsInit"
 import { mountInput } from "../../controllers/mount.controller"
 import { defaultAnimation } from "../../controllers/animation.controller"
 import { useInputId } from "../../composables/initId"
+import { useInputModelSync } from "../../composables/useModelSync"
 
 const $arkform = useArkForm()
 const groupId = inject<Ref<string | null>>("group-id", ref(null))
@@ -91,21 +81,12 @@ if (!formId) {
 const inputType = type("string")
 type ModelType = typeof inputType.infer
 
-const validModel = defineModel<boolean | null>("valid", { required: true })
-const modelValue = defineModel<any | null>({ required: true })
-const validatedModel = defineModel<ModelType | null>("validated", { required: true })
-const errorsModel = defineModel<string[]>("errors", { required: true })
-const idModel = defineModel<string>("id", { required: true })
-const stateModel = defineModel<UseArkInput>("state", { required: true })
-
-const models = {
-    validModel,
-    modelValue,
-    validatedModel,
-    errorsModel,
-    idModel,
-    stateModel,
-}
+const validModel = defineModel<boolean | null>("valid")
+const modelValue = defineModel<any | null>()
+const validatedModel = defineModel<ModelType | null>("validated")
+const errorsModel = defineModel<string[]>("errors", { default: [] })
+const idModel = defineModel<string>("id", { default: null })
+const stateModel = defineModel<UseArkInput>("state", { default: null })
 
 const inputId = useInputId({
     idModel,
@@ -117,12 +98,8 @@ if (!inputId) {
     throw new Error("[Arkform] Missing <input-id> injection")
 }
 
-const state = computed(() => {
-    return $arkform.useInput(inputId.value)
-})
-
 const bus = useBus()
-models.idModel.value = inputId.value
+idModel.value = inputId.value
 
 const components = ref({
     label: null,
@@ -158,12 +135,20 @@ const {
     textarea = false,
     checkbox = false,
     optional = false,
-    valid = null,
-    validated = null,
+
     errors = [],
 
     ark = [],
 } = defineProps<Props>()
+
+function onInput() {
+    bus.emit(`${formId}:input`)
+    bus.emit(`${inputId}:input`)
+
+    if (groupId) {
+        bus.emit(`${groupId}:input`)
+    }
+}
 
 componentsInit({ slots: useSlots(), components })
 mountInput({
@@ -175,32 +160,18 @@ mountInput({
     optional,
 })
 
-function onInput() {
-    bus.emit(`${formId}:input`)
-    bus.emit(`${inputId}:input`)
+const inputRef = computed(() => $arkform.useInput(inputId.value))
 
-    if (groupId) {
-        bus.emit(`${groupId}:input`)
-    }
-}
-
-watch(
-    () => $arkform.useInput(inputId.value),
-    (input) => {
-        models.modelValue.value = input.value
-        models.stateModel.value = { ...input }
-
-        if (input.valid.value === true) {
-            models.validatedModel.value = input.value.value
-        } else {
-            models.validatedModel.value = null
-        }
-
-        models.validModel.value = input.valid.value
-        models.errorsModel.value = input.errors.value
+useInputModelSync({
+    inputRef,
+    models: {
+        validModel,
+        stateModel,
+        validatedModel,
+        modelValue,
+        errorsModel,
     },
-    { immediate: true, deep: true },
-)
+})
 </script>
 
 <style scoped lang="scss"></style>

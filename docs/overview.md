@@ -1,4 +1,3 @@
-
 <script setup>
 import ExampleIframe from "./components/example-iframe.vue"
 </script>

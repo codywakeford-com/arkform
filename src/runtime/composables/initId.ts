@@ -14,9 +14,7 @@ export const useFormId: Func<UseFormId> = (P) => {
     const instanceId = useId()
     const id = useState<string>(`form-${instanceId}`, () => uuid())
 
-    if (idModel) {
-        idModel.value = id.value
-    }
+    idModel.value = id.value
 
     provide<Ref<string>>(`form-id`, id)
 
@@ -40,9 +38,7 @@ export const useInputId: Func<UseInputId> = (P) => {
         return uuid({ id: groupId.value || formId.value, add: "input" })
     })
 
-    if (idModel) {
-        idModel.value = id.value
-    }
+    idModel.value = id.value
 
     provide<Ref<string>>(`input-id`, id)
 
@@ -65,9 +61,7 @@ export const useGroupId: Func<UseGroupId> = (P) => {
         return uuid({ id: formId.value, add: "group" })
     })
 
-    if (idModel) {
-        idModel.value = id.value
-    }
+    idModel.value = id.value
 
     provide<Ref<string>>(`group-id`, id)
 

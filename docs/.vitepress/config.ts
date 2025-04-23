@@ -23,7 +23,12 @@ export default defineConfig({
             {
                 text: "$arkform",
                 link: "/$arkform",
-                items: [{ text: "Introduction", link: "/$arkform" }],
+                items: [
+                    { text: "Introduction", link: "/$arkform" },
+                    { text: "useInput()", link: "/$arkform/useInput" },
+                    { text: "useForm()", link: "/$arkform/useForm" },
+                    { text: "useGroup()", link: "/$arkform/useGroup" },
+                ],
             },
             {
                 text: "Components",
