@@ -10,7 +10,7 @@
             <div class="col">
                 <h4>Input State</h4>
                 <pre wrap>v-model:id = {{ id }}</pre>
-                <pre>v-model = {{ model }}</pre>
+                <pre>v-model = {{ `${model}` }}</pre>
                 <pre>v-model:errors = {{ errors }}</pre>
             </div>
         </client-only>

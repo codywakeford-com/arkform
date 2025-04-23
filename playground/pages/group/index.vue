@@ -1,32 +1,46 @@
 <template>
-    <ark-form>
-        <ark-group name="group" v-model:state="group" v-model:id="groupId" v-model:items="items">
-            <div class="flex">
-                <div>
-                    <ark-input name="message" v-model="input" />
-                    <button @click="$arkform.validate(groupId)">Validate</button>
-                    <button @click="$arkform.group.add(groupId)">add</button>
-                </div>
-                <div>
-                    <pre>v-model:state = {{ group }}</pre>
-                    <pre>v-model = {{ input }}</pre>
-                    <pre>v-model:id = {{ groupId }}</pre>
-                    <pre>v-model:items = {{ items }}</pre>
-                </div>
+    <div class="flex">
+        <ark-form>
+            <ark-group
+                v-model:state="state"
+                v-model:errors="errors"
+                v-model:items="groupItems"
+                v-model:id="id"
+                name="messages"
+                v-model="group"
+            >
+                <ark-input ark="string>0" name="message2"></ark-input>
+                <ark-input name="message3"></ark-input>
+                <ark-email />
+            </ark-group>
+
+            <ark-submit>Submit</ark-submit>
+            <button @click="$arkform.group.add(id)">Add Item</button>
+        </ark-form>
+
+        <client-only>
+            <div class="col">
+                <pre>v-model = {{ group }}</pre>
+                <pre>v-model:items = {{ groupItems }}</pre>
+                <pre>v-model:id = {{ id }}</pre>
             </div>
-        </ark-group>
-    </ark-form>
+        </client-only>
+    </div>
 </template>
 
 <script setup lang="ts">
 import { useArkForm } from "../../../src/runtime/composables/useArkform"
 
 const $arkform = useArkForm()
-const out = ref()
-const groupId = ref()
+
+const id = ref("")
 const group = ref()
-const input = ref()
-const items = ref()
+const groupItems = ref()
+const form = ref({
+    email: null,
+})
+const errors = ref([])
+const state = ref()
 </script>
 
 <style scoped lang="scss"></style>

@@ -8,7 +8,8 @@
             v-model:names="names"
         >
             <ark-input name="email" ark="string.email"></ark-input>
-            <ark-input name="message"></ark-input>
+            <ark-input name="password"></ark-input>
+            <ark-input name="confirm-password" matches="password"></ark-input>
 
             <ark-submit>Submit</ark-submit>
         </ark-form>
@@ -19,6 +20,7 @@
                 <pre>v-model:id = {{ formId }}</pre>
                 <pre>v-model:errors = {{ errors }}</pre>
                 <pre>v-model:names = {{ names }}</pre>
+                <pre>v-model:state = {{ state }}</pre>
             </div>
         </client-only>
     </div>

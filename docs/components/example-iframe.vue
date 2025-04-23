@@ -12,17 +12,6 @@ interface Props {
 }
 
 const { url } = defineProps<Props>()
-
-onMounted(() => {
-    window.addEventListener("message", (event) => {
-        if (event.data?.type === "setHeight") {
-            const iframes = document.querySelectorAll("iframe")
-            iframes.forEach((iframe) => {
-                iframe.style.height = `${event.data.height}px`
-            })
-        }
-    })
-})
 </script>
 
 <style scoped lang="scss">
@@ -30,8 +19,8 @@ iframe {
     border: none;
     width: 100%;
     margin-top: 20px;
-    min-height: 300px;
+    min-height: 0px;
     border-radius: 8px;
-    max-height: 500px;
+    max-height: 250px;
 }
 </style>

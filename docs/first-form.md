@@ -6,7 +6,7 @@ import ExampleIframe from './.vitepress/components/example-iframe.vue'
 
 In this page I'll give you a high level view of what you can do with [Arkform]() and link various pages for extra details.
 
-A form requires 1 thing to work. That is the `<ark-form/>` tag. All form state is stored using this tag. All `<ark-input/>` and `<ark-group/>` must be inside a `<ark-form/>` to work.
+OK, lets start with a minimal example. A form requires only a few things to work. The core, of course, is the `<ark-form />` tag. All form state is orginised using this tag. `<ark-input/>` and `<ark-group/>` elements must be inside a `<ark-form/>` to work at all.
 
 ```html
 <ark-form>
@@ -14,7 +14,7 @@ A form requires 1 thing to work. That is the `<ark-form/>` tag. All form state i
 </ark-form>
 ```
 
-<ExampleIframe url="/plain-input" />
+<ExampleIframe url="/plain-input" style="max-height: 200px;"/>
 
 ## Validation
 
@@ -22,13 +22,12 @@ A form requires 1 thing to work. That is the `<ark-form/>` tag. All form state i
 
 To validate a form we can pass in a validator to a `<ark-input />` element. We can pass a **string** or a **string[]**.
 
-
 ```html
 <ark-form>
     <ark-input name="message" ark="string>=10" />
 </ark-form>
 ```
-<ExampleIframe url="/input-string>10" />
+<ExampleIframe url="/input-string>10" style="max-height: 200px;" />
 
 For all primitives we can pass as strings. See the all the primitive validators [here](https://arktype.io)
 
@@ -37,23 +36,31 @@ For all primitives we can pass as strings. See the all the primitive validators 
     <ark-input name="message" :ark="['string>=10', 'string.alphanumeric']" />
 </ark-form>
 ```
-<ExampleIframe url="/input-stringarray" />
+<ExampleIframe url="/input-stringarray" style="max-height: 200px;"/>
 
-Learn more about form validation [here](/validation)
+Learn more about form validation [here](/concepts/validation)
 
 ## Groups
 
 [Full groups breakdown](/components/groups)
 
-With primitive inputs solved, we look to building typesafe arrays given a user input. Maybe we want to produce a **string[]**, for example collecting a list of emails. Or we want to produce a **object[]** list a list of billing addresses. This is where we can leverage `<ark-group/>`.
+Groups are how you turn repeatable form structures into clean, validated, type-safe arrays. Whether you're collecting a string[] (like emails) or an object[] (like shipping addresses), `<ark-group>` makes it feel like plain HTML while giving you full validation and control.
 
-The `<ark-group />` element takes `<ark-inputs />` as its descendents and you use them like normal.
+### What is a group?
 
-Each group exposes an array named `items`. This is where all form data is stored. You can access these items if needed using the `v-model:items`
+An `<ark-group>` is a container for one or more `<ark-input>` components. Every time the group is "submitted" (via `$arkform.addItem()`), it collects the current values of those inputs and pushes a new item into the group’s items array.
+
+Doing this you're building a list of validated objects, typed and ready to use.
+
+The `<ark-group />` element takes `<ark-inputs />` as its descendents and you use them like normal. An `<ark-group />` element exposes many of the same state objects as a form for complete control.
+
+Each group exposes an array named `items`. This is where all form data is stored. You can access these items if needed using the `v-model:items`.
 
 ```html
 <ark-form>
     <ark-group ref="group">
+        <ark-input name="message2" />
+        <ark-input name="message3" />
         <ark-email />
     </ark-group>
 
@@ -65,12 +72,17 @@ const group = ref(null)
 </script>
 ```
 
-<ExampleIframe url="/group" />
+<ExampleIframe url="/group" style="max-height: 300px; min-height: 450px;"/>
 
-By default a group will render UI to manage the groups. I plan to add more UI designs that work out of the box for the most common use cases. For example chips for primitive arrays or tables for extensive objects.
+To make building dynamic forms even faster, Arkform will include plug-and-play UI components for common use cases. These will give you everything you need to add, edit, and delete items from your group arrays — no boilerplate required.
 
-To build your own UI please refer to the functions below.
+**Some planned components:**
 
+🟦 Pill-style inputs – perfect for collecting lists like email[] or tags[]
+
+🗂️ Editable tables – ideal for managing object[] like user info, addresses, or product variants.
+
+These components are designed to just drop in and work out of the box — while still providing the underlying API for when you need to build something custom.
 
 ## First Form
 
@@ -106,11 +118,3 @@ Ark inputs expose a their state to be used.
 <ark-input v-model="state" />
 ```
 
-## Box Model
-
-
-<iframe 
-  src="http://localhost:3000/box-model" 
-  width="100%"
-  style="border: none; border-radius: 6px; min-height: 325px;" 
-></iframe>

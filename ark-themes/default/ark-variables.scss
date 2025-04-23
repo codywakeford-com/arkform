@@ -1,0 +1,106 @@
+:root {
+    /* General Colors */
+    --ark-color-primary: rgba(0, 122, 255, 0.7);
+    --ark-color-secondary: rgba(255, 255, 255, 0.2);
+    --ark-color-error: #cc0000;
+    --ark-color-success: #4CAF50;
+    --ark-color-info: #2196F3;
+
+    /* Form Backgrounds */
+    --ark-bg-form: transparent;
+    --ark-bg-input: #161618;
+    --ark-bg-input-focus: #161618;
+    --ark-bg-error: transparent;
+    --ark-bg-success: transparent;
+
+    /* Text Colors */
+    --ark-color-text: rgba(255, 255, 255, 0.8);
+    --ark-color-text-muted: #757575;
+    --ark-color-text-placeholder: #9e9e9e;
+    --ark-color-text-error: #f44336;
+
+    /* Borders */
+    --ark-border-radius: 4px;
+    --ark-border-width: 1px;
+    --ark-border-color: #ccc;
+    --ark-border-color-focus: #4CAF50;
+    --ark-border-color-error: #f44336;
+
+    /* Spacing */
+    --ark-space-xs: 8px;
+    --ark-space-sm: 16px;
+    --ark-space-md: 24px;
+    --ark-space-lg: 32px;
+    --ark-space-xl: 40px;
+
+    /* Typography */
+    --ark-font-family: 'Roboto', sans-serif;
+    --ark-font-size-base: 16px;
+    --ark-font-size-lg: 18px;
+    --ark-font-size-sm: 14px;
+    --ark-font-weight-regular: 400;
+    --ark-font-weight-bold: 700;
+
+    /* Input Styles */
+    --ark-input-padding: var(--ark-space-sm) var(--ark-space-md);
+    --ark-input-font-size: var(--ark-font-size-base);
+    --ark-input-line-height: 1.5;
+    --ark-input-transition: 0.3s ease;
+
+    /* Button Styles */
+    --ark-btn-bg: var(--ark-color-primary);
+    --ark-btn-bg-hover: #45a049;
+    --ark-btn-color: #ffffff;
+    --ark-btn-padding: var(--ark-space-sm) var(--ark-space-md);
+    --ark-btn-border-radius: var(--ark-border-radius);
+    --ark-btn-font-size: var(--ark-font-size-base);
+
+    /* Error Styles */
+    --ark-error-border-color: var(--ark-color-error);
+    --ark-error-bg-color: var(--ark-bg-error);
+    --ark-error-text-color: var(--ark-color-error);
+
+    /* Success Styles */
+    --ark-success-border-color: var(--ark-color-success);
+    --ark-success-bg-color: var(--ark-bg-success);
+    --ark-success-text-color: var(--ark-color-success);
+
+    /* Label Styles */
+    --ark-label-bg: transparent;
+    --ark-label-color: #333333;
+    --ark-label-font-size: var(--ark-font-size-base);
+    --ark-label-font-weight: var(--ark-font-weight-regular);
+    --ark-label-margin-bottom: var(--ark-space-xs);
+    --ark-label-padding: 0;
+    --ark-label-text-align: left;
+
+    /* Help Styles */
+    --ark-help-text-color: #757575;
+    --ark-help-text-font-size: var(--ark-font-size-sm);
+    --ark-help-text-margin-top: var(--ark-space-xs);
+    --ark-help-text-line-height: 1.4;
+
+    /* Error Styles */
+    --ark-error-border-color: var(--ark-color-error);
+    --ark-error-bg-color: var(--ark-bg-error);
+    --ark-error-text-color: var(--ark-color-error);
+    --ark-error-font-size: var(--ark-font-size-sm);
+    --ark-error-margin-top: var(--ark-space-xs);
+    --ark-error-padding: var(--ark-space-xs);
+
+    /* Fore Styles */
+    --ark-fore-font-size: var(--ark-font-size-sm);
+    --ark-fore-font-weight: var(--ark-font-weight-regular);
+    --ark-fore-color: #333333;
+    --ark-fore-margin-bottom: var(--ark-space-xs);
+    --ark-fore-line-height: 1.5;
+
+    /* Aft Styles */
+    --ark-aft-font-size: var(--ark-font-size-sm);
+    --ark-aft-font-weight: var(--ark-font-weight-regular);
+    --ark-aft-color: #757575;
+    --ark-aft-margin-top: var(--ark-space-xs);
+    --ark-aft-line-height: 1.5;
+    --ark-aft-padding: 0;
+    --ark-aft-text-align: left;
+}

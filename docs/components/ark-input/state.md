@@ -20,10 +20,8 @@ type Model = {
     // null if not checked yet, boolean is the valid state.
     "v-model:valid": boolean | null 
 
-    // This outputs the same as v-model, but only if the input is valid.
-    "v-model:validated": {
-        [fieldName: string]: string 
-    } | null
+    // This outputs the same as v-model, but ONLY if the input is valid.
+    "v-model:validated": YourInputType | null
 }
 ```
 

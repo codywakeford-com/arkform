@@ -38,10 +38,16 @@ const $arkform = {
         if (!form) {
             throw new Error(`useForm(): Form "${formId}" not found`)
         }
+
         const inputs: ArkInputs = form.inputs
 
         const names = computed(() => {
-            return Object.values(inputs).map((input: any) => input.name)
+            return Object.entries(inputs).map(([id, input]) => {
+                return {
+                    name: input.name,
+                    id: id,
+                }
+            })
         })
 
         const errors = computed(() => {

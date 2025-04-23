@@ -2,6 +2,7 @@ import { ark, type } from "arktype"
 import type { ModuleOptions } from "~/src/module"
 import { useArkForm } from "../../composables/useArkform"
 import { useArkFormStore } from "../../stores/forms"
+import { getInputIdByName } from "../utils/getInputByName"
 
 type Z = {
     Params: {
@@ -25,6 +26,18 @@ export const validateInput: Func<Z> = (P) => {
     for (const ark of input.arkValidators.value) {
         const err = getErrorMessages(ark, id)
         errors.push(...err)
+    }
+
+    if (input.matches.value) {
+        const inputToMatchId = getInputIdByName({
+            name: input.matches.value,
+            id,
+        })
+
+        const inputToMatch = $arkform.useInput(inputToMatchId)
+        if (inputToMatch.value.value !== input.value.value) {
+            errors.push(`This field must match the ${input.matches.value} field.`)
+        }
     }
 
     const merged = [...new Set([...input.errors.value, ...errors])]

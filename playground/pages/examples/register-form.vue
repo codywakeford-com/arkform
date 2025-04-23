@@ -8,6 +8,7 @@
             <ark-email />
             <ark-password strength="weak" />
             <ark-confirm-password strength="weak" />
+
             <ark-checkbox name="tc">
                 <ark-label>Do you accept the terms of service?</ark-label>
             </ark-checkbox>

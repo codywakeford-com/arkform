@@ -11,6 +11,7 @@ import { useArkformConfig } from "./runtime/composables/useArkformConfig"
 
 // Module options TypeScript interface definition
 export interface ModuleOptions {
+    /** */
     theme: "default" | string
     errors: {
         [arkValidator: string]: string
@@ -28,10 +29,12 @@ export default defineNuxtModule<ModuleOptions>({
 
     // Default configuration options of the Nuxt module
     defaults: {
-        theme: "default",
+        theme: "~/src/runtime/",
         errors: {
             "string.email": "Please enter a valid email.",
             "string > 0": "This field is required.",
+            "string>0": "This field is required.",
+            "string>6": "Must be over length 6",
 
             // Password regex
             "/^(?=.*[a-z])/": "Password must contain at least one lowercase letter.",
@@ -56,7 +59,6 @@ export default defineNuxtModule<ModuleOptions>({
                 "Password cannot contain sequential characters.",
             "/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/.*/":
                 "Please provide a valid email address.",
-            "string>0": "this field is required.",
         },
 
         password: {
@@ -139,11 +141,7 @@ export default defineNuxtModule<ModuleOptions>({
 
         await installModule("@pinia/nuxt")
 
-        if (options.theme === "default") {
-            _nuxt.options.css.push(resolver.resolve("./runtime/style/ark-default-theme.scss"))
-        } else {
-            _nuxt.options.css.push(resolve(_nuxt.options.rootDir, options.theme))
-        }
+        _nuxt.options.css.push(resolve(_nuxt.options.rootDir, options.theme))
 
         addImportsDir(resolve(__dirname, "runtime/composables"))
 

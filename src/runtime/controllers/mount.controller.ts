@@ -1,4 +1,6 @@
+import { useArkForm } from "../composables/useArkform"
 import { inputFactory, formFactory, groupFactory } from "../services/factory.service"
+import { getInputIdByName } from "../services/utils/getInputByName"
 import { getIdsFromId } from "../services/utils/uuid"
 import { useArkFormStore } from "../stores/forms"
 
@@ -37,6 +39,19 @@ export const mountInput: Func<MountInput> = (P) => {
             matches,
             preset,
         })
+
+        // if (matches) {
+        //     const $arkform = useArkForm()
+
+        //     const inputIdToMatch = getInputIdByName({
+        //         name: matches,
+        //         id,
+        //     })
+
+        //     const input = $arkform.useInput(inputIdToMatch)
+
+        //     input.matches.value = inputName
+        // }
 
         console.log("input object", inputData)
 

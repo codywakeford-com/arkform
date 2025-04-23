@@ -40,7 +40,7 @@ export const uuid: Func<Z> = (P) => {
 }
 
 interface IdType {
-    formId: null | string
+    formId: string
     inputId: null | string
     groupId: null | string
     type: "group" | "form" | "input" | null
@@ -48,7 +48,7 @@ interface IdType {
 
 export function getIdsFromId(id: string): IdType {
     const result: IdType = {
-        formId: null,
+        formId: "",
         inputId: null,
         groupId: null,
         type: null,
@@ -85,6 +85,10 @@ export function getIdsFromId(id: string): IdType {
         if (split[i].startsWith("group")) {
             result.groupId = theId
         }
+    }
+
+    if (!result.formId) {
+        throw new Error(`Invalid id ${id}`)
     }
 
     return result

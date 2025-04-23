@@ -21,7 +21,7 @@
 
         <client-only>
             <div class="col">
-                <pre>v-model = {{ model }}</pre>
+                <pre>v-model = {{ `${model}` }}</pre>
                 <pre>v-model:valid = {{ valid === null ? "null" : valid }}</pre>
                 <pre>v-model:validated = {{ validated === null ? "null" : validated }}</pre>
                 <pre>v-model:performance = {{ perf ? perf.toFixed(4) : "0.000" }}ms</pre>

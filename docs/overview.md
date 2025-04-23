@@ -4,73 +4,66 @@ import ExampleIframe from "./components/example-iframe.vue"
 
 # Arkform
 
-Arkform was built to make building forms a lot faster and provide a smoother development experience. Managing form state and validating user input can be a pain. Built with DX in mind Arkform attemps to make this a breeze with an intuative HTML native feel.
+Arkform was built to make form development faster and more intuitive, with a focus on developer experience (DX). Managing form state and validating user input has traditionally been a hassle — Arkform aims to change that by offering a streamlined, HTML-native feel without sacrificing flexibility or power.
 
-Arkform is built on top of [Arktype](https://arktype.io), a great runtime validation library. Arktype provides a powerful set of features that mimic the native [Typescript](https://www.typescriptlang.org/) syntax. 
+At its core, Arkform is powered by Arktype — a modern runtime validation library that mirrors native TypeScript syntax. This gives you a strong, expressive way to define and enforce types directly in your forms.
+
+### Why Arkform?
+
+As a developer running a web agency, I built Arkform to save time and write more maintainable code, not to reinvent the wheel, but to fix the flat tire. Most form libraries either over-engineer simple tasks or underdeliver on complex ones. Arkform is designed to strike the perfect balance.
+
+While other libraries quickly jump into adding every feature they can conjure up, I want to focus on building the best abstraction ontop of form validation. This means, as features are added you will still be able to manipulate every aspect of the form. Abstraction without comprimise takes careful design and planning but ultimately is the only way we end up with complex things that are easy to use, rather than the other way around. 
+
+**We focus on:**
+
+🔧 Simplicity: Should feel like writing native HTML.
+
+🧠 Clarity: Easy to understand, reason about, and onboard other developers.
+
+⚡ Power: Capable of handling advanced scenarios without a steep learning curve.
+
+Whether you're building a basic contact form or a complex multi-step flow, Arkform gives you the tools you need without getting in your way.
 
 
-## Overview
+## Core Use Case
+The most common use case for forms is handling basic text input — and this is where Arkform shines. With Arktype under the hood, you get rich validation out of the box for all your primitive types (strings, numbers, booleans, etc.).
 
-The majority of what you'll be using forms for is basic text input. Arktype makes it easy to validate your primitive user inputs. More information on the Arktype primitive validation can be found [here](https://arktype.io/docs/primitives).
+To get a sense of how Arktype works with primitives, check out their docs here.
 
 ## Example 
 
-Here you can see a register form mockup and it's outputs.
+To give you a quick peak on the library here is a register form mockup and some of it's basic outputs along with the code used.
 
 
 <ExampleIframe url="/" style="min-height: 575px;"/>
 
+And here is the code this example uses. You you usually wouldn't need this many `v-models`, just so you can see whats under the hood.
 
-## Validation
+```vue
+<template>
+    <ark-form
+        v-model="form"
+        v-model:performance="perf"
+        v-model:errors="errors"
+        v-model:valid="valid"
+        v-model:validated="validated"
+        v-model:id="id"
+    >
+        <div class="inline">
+            <ark-input name="firstName"></ark-input>
+            <ark-input name="lastName"></ark-input>
+        </div>
 
-[Full Validation Breakdown](/concepts/validation)
+        <ark-input name="email" ark="string.email">
+            <ark-fore name="material-symbols:mail-rounded" />
+        </ark-input>
 
-Validation is often the most tedious thing to set up when building from scratch and form libraries often take control away when giving form valiadation. Arkform aims to be a zero cost abstraction built with DX center stage.
-
-Validators can be passed into the `ark` prop of the `<ark-input />` component or any of its wrappers as shown below. Please visit [Arktype] for more information on validators. The `ark` prop accepts a string or an array of strings.
-
-Here are some examples of validating primitive values.
-
-```html
-<ark-input ark="string.email" />
-
-<ark-input ark="string > 0" />
-
-<ark-input ark="string.uuid.v4" />
-
-<ark-input ark="string.url"/>
-
-<ark-input ark="number < 500"/>
-
-<ark-input ark="string.NaN"/>
-
-<ark-input ark="string.Infinity"/>
-
-<ark-input :ark="['string > 0', 'string.alphanumeric']" />
+        <ark-input name="password" ark="string>6" />
+        <ark-submit />
+    </ark-form>
+</template>
 ```
 
-oh and it takes regex too!
-
-```html
-<ark-input ark="/^\s*\S+(?:\s+\S+)+\s*$/" />
-```
-
-<iframe 
-  src="http://localhost:3000/validation" 
-  width="100%"
-  id="myIframe"
-  style="border: none; border-radius: 6px; min-height: 325px;" 
-></iframe>
-
-When a form is submit using `<ark-submit />` these validators will be checked and will throw an error if they do not meet the spec.
-
-```html
-<ark-form v-model="output" :submit="myFunction">
-    <ark-input name="email" ark="string.email"/>
-    <ark-submit>Submit</ark-submit>
-</ark-form>
-```
-
-This will display any errors to the user and only run the given function on success.
+As you can see not only do we remove a lot of the boiler plate from the native HTML we also have a declarative api for defining our forms.
 
 

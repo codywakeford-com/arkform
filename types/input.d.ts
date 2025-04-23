@@ -1,6 +1,11 @@
 export {}
 
 declare global {
+    type InputName = {
+        id: string
+        name: string
+    }
+
     interface FormMetadata {
         validateDelayTime: number
     }
@@ -145,7 +150,7 @@ declare global {
         valid: ComputedRef<boolean | null>
 
         /**A list of all descendent <input /> name attributes. */
-        names: ComputedRef<string[]>
+        names: ComputedRef<InputName[]>
 
         /**A list of errors for all descendents */
         errors: ComputedRef<string[]>

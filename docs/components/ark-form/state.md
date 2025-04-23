@@ -36,16 +36,8 @@ type Model = {
     "v-model:performance": number
 }
 ```
-
 ## Example
 
 Here you can see all the exposed reactive values provided by the `<ark-form />` element.
 
-<ExampleIframe url="/form/state" />
-
-
-## v-validated
-
-There are also a number of valid state props for you to hook into.
-
-
+<ExampleIframe url="/form/state" style="min-height: 425px;"/>

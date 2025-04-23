@@ -1,7 +1,7 @@
 <template>
     <div class="flex">
         <ark-form v-model="out">
-            <ark-email />
+            <ark-email class="email" />
 
             <ark-submit />
         </ark-form>
@@ -14,4 +14,10 @@
 const out = ref()
 </script>
 
-<style scoped lang="scss"></style>
+<style lang="scss">
+.email {
+    input {
+        border: 1px solid green;
+    }
+}
+</style>
