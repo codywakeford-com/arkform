@@ -6,13 +6,14 @@ import {
     installModule,
     addImportsDir,
 } from "@nuxt/kit"
+import fs from "fs"
 import { resolve } from "node:path"
 import { useArkformConfig } from "./runtime/composables/useArkformConfig"
 
 // Module options TypeScript interface definition
 export interface ModuleOptions {
     /** */
-    theme: "default" | string
+    theme: string
     errors: {
         [arkValidator: string]: string
     }
@@ -29,7 +30,7 @@ export default defineNuxtModule<ModuleOptions>({
 
     // Default configuration options of the Nuxt module
     defaults: {
-        theme: "~/src/runtime/",
+        theme: "./ark-themes/default",
         errors: {
             "string.email": "Please enter a valid email.",
             "string > 0": "This field is required.",
@@ -141,7 +142,15 @@ export default defineNuxtModule<ModuleOptions>({
 
         await installModule("@pinia/nuxt")
 
-        _nuxt.options.css.push(resolve(_nuxt.options.rootDir, options.theme))
+        const themeDir = resolve(_nuxt.options.rootDir, options.theme)
+
+        const files = fs
+            .readdirSync(themeDir)
+            .filter((file) => file.endsWith(".css") || file.endsWith(".scss"))
+
+        for (const file of files) {
+            _nuxt.options.css.push(resolve(themeDir, file))
+        }
 
         addImportsDir(resolve(__dirname, "runtime/composables"))
 
