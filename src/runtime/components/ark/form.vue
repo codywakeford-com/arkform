@@ -5,6 +5,7 @@
         class="ark-form"
         :class="{
             [`arkform-animation-${animation}`]: !!animation,
+            [theme]: !!theme,
         }"
     >
         <div v-if="reset" class="ark-form-reset-button">
@@ -69,6 +70,7 @@ interface Props {
     valid?: boolean | null
     validated?: any | null
     animation?: false | "default"
+    theme?: string
 }
 
 const {
@@ -82,6 +84,7 @@ const {
     id = "",
     name = "",
     modelValue = {},
+    theme = "arkform-theme-default",
 
     animation = "default",
 } = defineProps<Props>()

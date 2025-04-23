@@ -18,7 +18,13 @@ export default defineConfig({
             },
             {
                 text: "Concepts",
-                items: [{ text: "Validation", link: "/concepts/validation" }],
+                items: [
+                    { text: "Validation", link: "/concepts/validation" },
+                    { text: "Error Messages", link: "/concepts/error-messages" },
+                    { text: "Theme", link: "/concepts/theme" },
+                    { text: "Animations", link: "/concepts/animations" },
+                    { text: "Options", link: "/concepts/options" },
+                ],
             },
             {
                 text: "$arkform",
@@ -68,14 +74,6 @@ export default defineConfig({
                     },
                     { text: "ark-errors", link: "/components/ark-errors" },
                     { text: "ark-items", link: "/components/ark-items" },
-                ],
-            },
-            {
-                text: "Customization",
-                items: [
-                    { text: "Options", link: "customization/options" },
-                    { text: "Error Messages", link: "customization/error-messages" },
-                    { text: "Theme", link: "customization/theme" },
                 ],
             },
             {

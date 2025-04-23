@@ -1,0 +1,48 @@
+:root {
+    --animation-speed-mult: 1;
+    --anim-time: 10s;
+    --ark-animation-error-height: 25px;
+}
+
+.ark-form {
+
+    /** Theme namespace */
+    &.arkform-animation-default {
+
+        /* Error animation states */
+        .ark-error-enter-from {
+            height: 0;
+            opacity: 0;
+            transform: translateY(-25px);
+        }
+
+        .ark-error-leave-to {
+            height: 0;
+            opacity: 0;
+            transform: translateY(-25px);
+        }
+
+        .ark-error-enter-to,
+        .ark-error-leave-from {
+            height: var(--ark-animation-error-height);
+            opacity: 1;
+            z-index: 0;
+            transform: translateY(0);
+        }
+
+        /* Active transitions */
+        .ark-error-enter-active {
+            transition:
+                height calc(var(--anim-time) * var(--animation-speed-mult)) ease,
+                opacity calc(var(--anim-time) * var(--animation-speed-mult) * 1.25) ease,
+                transform calc(var(--anim-time) * var(--animation-speed-mult) * 1.25) ease;
+        }
+
+        .ark-error-leave-active {
+            transition:
+                height calc(var(--anim-time) * var(--animation-speed-mult) * 1.25) ease,
+                opacity calc(var(--anim-time) * var(--animation-speed-mult)) ease,
+                transform calc(var(--anim-time) * var(--animation-speed-mult)) ease;
+        }
+    }
+}

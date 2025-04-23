@@ -8,7 +8,7 @@ Arkform was built to make form development faster and more intuitive, with a foc
 
 At its core, Arkform is powered by Arktype — a modern runtime validation library that mirrors native TypeScript syntax. This gives you a strong, expressive way to define and enforce types directly in your forms.
 
-### Why Arkform?
+## Why Arkform?
 
 As a developer running a web agency, I built Arkform to save time and write more maintainable code, not to reinvent the wheel, but to fix the flat tire. Most form libraries either over-engineer simple tasks or underdeliver on complex ones. Arkform is designed to strike the perfect balance.
 
@@ -16,7 +16,7 @@ While other libraries quickly jump into adding every feature they can conjure up
 
 **We focus on:**
 
-🔧 Simplicity: Should feel like writing native HTML.
+🔧 Fully Customisable: All css is local to your project so no more `!important` flags.
 
 🧠 Clarity: Easy to understand, reason about, and onboard other developers.
 

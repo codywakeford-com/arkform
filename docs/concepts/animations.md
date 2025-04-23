@@ -1,5 +1,40 @@
-const ANIMATION_TIME = 200
+# Animations
 
+To have full control over animations is a bit more tricky. Generally with form animations you will need to calculate height for elements dynamically so javascript is naturally the tools of choice. 
+
+**Animations use the `<VueTransition />` api.**
+
+You can define an animation in the `nuxt.config.ts`.
+
+```typescript
+import { yourAnimation } from "place"
+
+export default defineNuxtConfig({
+    arkform: {
+        animations: {
+            defaultAnimation: "yourAnimationName"
+            "yourAnimationName": yourAnimation
+        }
+    }
+})
+```
+
+## Animation Interface 
+
+```typescript
+interface VueTransition {
+    beforeEnter: (el: Element) => void
+    enter: (el: Element, done: () => void) => void
+    beforeLeave: (el: Element) => void
+    leave: (el: Element, done: () => void) => void
+}
+```
+
+## Animation Example
+
+And here is the default transition as an example.
+
+```typescript
 export const arkDefaultAnimation: VueTransition = {
     beforeEnter: (el: Element) => {
         const element = el as HTMLElement
@@ -43,3 +78,11 @@ export const arkDefaultAnimation: VueTransition = {
         }, ANIMATION_TIME)
     },
 }
+```
+## Selecting an animation
+
+Once you have set your animation in nuxt you can provide an animation name to a component.
+
+```html
+<ark-input animation="yourAnimationName" />
+```

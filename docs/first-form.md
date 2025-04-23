@@ -6,6 +6,10 @@ import ExampleIframe from './.vitepress/components/example-iframe.vue'
 
 In this page I'll give you a high level view of what you can do with [Arkform]() and link various pages for extra details.
 
+### Theme
+
+When you first install [Arkform]() there are no themes, this is because all themes are in your control. Find out how to install themes [here](/customization/theme)
+
 OK, lets start with a minimal example. A form requires only a few things to work. The core, of course, is the `<ark-form />` tag. All form state is orginised using this tag. `<ark-input/>` and `<ark-group/>` elements must be inside a `<ark-form/>` to work at all.
 
 ```html

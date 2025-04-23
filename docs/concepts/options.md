@@ -1,71 +1,97 @@
-import {
-    defineNuxtModule,
-    addPlugin,
-    createResolver,
-    addComponentsDir,
-    installModule,
-    addImportsDir,
-} from "@nuxt/kit"
-import fs from "fs"
-import { resolve } from "node:path"
-import { arkDefaultAnimation } from "./runtime/controllers/animation.controller"
+# Arkform Options
 
-// Module options TypeScript interface definition
-export interface ModuleOptions {
-    /** */
-    styleRoot: string
-    animations: VueTransitions
-    errors: {
-        [arkValidator: string]: string
+## Theme 
+
+Here you can specify a file path to override the arkform default theme.
+
+```typescript
+export default defineNuxtConfig({
+    arkform: {
+        theme: "default",
     }
-    password: {
-        [validator: string]: string[]
-    }
-}
+})
+```
 
-export default defineNuxtModule<ModuleOptions>({
-    meta: {
-        name: "arkform",
-        configKey: "arkform",
-    },
+## Error Messages
 
-    // Default configuration options of the Nuxt module
-    defaults: {
-        styleRoot: "arkform",
-        animations: {
-            default: arkDefaultAnimation,
-        },
+Here you can pass the validators and their error that will take effect accross the entire application.
+
+```typescript
+export default defineNuxtConfig({
+    arkform: {
+        theme: "default", // Default theme used for the form
         errors: {
             "string.email": "Please enter a valid email.",
             "string > 0": "This field is required.",
-            "string>0": "This field is required.",
-            "string>6": "Must be over length 6",
 
-            // Password regex
+            // Password validation errors
+            // At least one lowercase letter
             "/^(?=.*[a-z])/": "Password must contain at least one lowercase letter.",
+
+            // At least one uppercase letter
             "/^(?=.*[A-Z])/": "Password must contain at least one uppercase letter.",
+
+            // At least one number
             "/^(?=.*\\d)/": "Password must contain at least one number.",
+
+            // At least one special character
             "/^(?=.*[!@#$%^&*()_\\-+=<>?{}[\\]~])/":
                 "Password must contain at least one special character.",
+
+            // Minimum length of 8 characters
             "/.{8,}$/": "Password must be at least 8 characters long.",
+
+            // Minimum length of 6 characters
             "/.{6,}$/": "Password must be at least 6 characters long.",
-            "/.{12,}$/": "Password must be at least 6 characters long.",
+
+            // Minimum length of 12 characters
+            "/.{12,}$/": "Password must be at least 12 characters long.",
+
+            // Does not contain common words like 'password', '12345', or 'qwerty'
             "/^(?!.*(password|12345|qwerty|abc)).*$/":
                 "Password cannot contain common words like 'password', '12345', or 'qwerty'.",
+
+            // Password cannot contain spaces
             "/^\\S+$/": "Password cannot contain spaces.",
+
+            // Password must contain both uppercase and lowercase letters
             "/^(?=.*[a-z])(?=.*[A-Z]).+$/":
                 "Password must contain both uppercase and lowercase letters.",
+
+            // Password must contain at least one non-alphanumeric character
             "/^(?=.*[^a-zA-Z0-9]).+$/":
                 "Password must contain at least one non-alphanumeric character.",
+
+            // Password cannot have repeated characters
             "/^(?!.*(.)\\1{2,}).+$/": "Password cannot have repeated characters.",
+
+            // At least one special character from a wider range
             '/^(?=.*[!@#$%^&*(),.?":{}|<>]).+$/':
                 "Password must contain at least one special character.",
+
+            // Password cannot contain sequential characters (e.g., 123, abc)
             "/^(?!.*(?:123|234|345|456|567|678|789|abc|bcd|cde|def)).*$/":
                 "Password cannot contain sequential characters.",
+
+            // Invalid email format
             "/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/.*/":
                 "Please provide a valid email address.",
-        },
 
+            // Another version of required field error
+            "string>0": "This field is required.",
+        },
+    }
+})
+
+```
+
+## Password
+
+These are the password presets, they should conver the majority of cases. If not, you can alter them or create your own. Each strategy contains an array of ark validators. 
+
+```typescript
+export default defineNuxtConfig({
+    arkform: {
         password: {
             weak: [
                 // At least one digit
@@ -136,38 +162,5 @@ export default defineNuxtModule<ModuleOptions>({
             ],
         },
     },
-
-    async setup(options, _nuxt) {
-        const resolver = createResolver(import.meta.url)
-
-        addComponentsDir({
-            path: resolver.resolve("runtime/components"),
-        })
-
-        await installModule("@pinia/nuxt")
-
-        const themeDir = resolve(_nuxt.options.rootDir, options.styleRoot)
-        addCssFilesFromDir(themeDir, _nuxt)
-
-        addImportsDir(resolve(__dirname, "runtime/composables"))
-
-        _nuxt.options.runtimeConfig.public.arkform = options
-    },
 })
-
-function addCssFilesFromDir(directory: string, _nuxt: any) {
-    const files = fs.readdirSync(directory)
-
-    files.forEach((file) => {
-        const filePath = resolve(directory, file)
-        const stat = fs.statSync(filePath)
-
-        if (stat.isDirectory()) {
-            // If it's a directory, recurse into it
-            addCssFilesFromDir(filePath, _nuxt)
-        } else if (file.endsWith(".css") || file.endsWith(".scss")) {
-            // If it's a CSS or SCSS file, add it to the Nuxt CSS array
-            _nuxt.options.css.push(filePath)
-        }
-    })
-}
+```

@@ -8,8 +8,7 @@ Arkform tries to stay out of the way and leave out the black magic. Download the
 
 Arkform does not apply any built-in CSS. All styling is opt-in. You can choose from a selection of pre-built Theme Packs — simple CSS or SCSS files designed to work with Arkform out of the box — and bring them into your project with a single download.
 
-If you want more than one theme in a project, you can specify a particular theme for each project.
-
+These themepacks work on css namespace selectors to allow for having multiple themes in one project. We effectivly just give our components a theme class. 
 
 **This means:**
 
@@ -23,20 +22,25 @@ No weird specificity battles with a form library trying to be clever.
 
 ## Default Theme
 
-Download a theme pack using the CLI or curl:
+Download the default theme pack using the curl:
 
 ```bash
 mkdir -p arkform/themes
 mkdir -p arkform/animations
 
 # Default theme install
-curl -L -o ./arkform-theme.zip https://github.com/codywakeford-com/arkform/blob/master/arkform/themes/default/default.zip
+curl -L -o ./default-theme.zip https://github.com/codywakeford-com/arkform/blob/master/arkform/themes/default/default-theme.zip
 
-# Unzip to your themes dir
-unzip ./arkform-theme.zip -d ./arkform/themes
+# Default animation
+curl -L -o ./default-animation.zip https://github.com/codywakeford-com/arkform/blob/master/arkform/themes/default/default-animation.zip
+
+# Unzip
+unzip ./arkform-default-theme.zip -d ./arkform/themes
+unzip ./arkform-default-animation.zip -d ./arkform/animation
 
 # Clean up
-rm arkform-theme.zip
+rm default-theme.zip
+rm default-animation.zip
 ```
 
 Of course if you want to browse these files before hand visit [github](https://github.com/codywakeford-com/arkform/blob/master/ark-themes/).
@@ -47,9 +51,11 @@ You can specify a theme in `nuxt.config.ts`.
 export default defineNuxtConfig({
     arkform: {
         style: {
-            // sets the default
-            themepack: "./arkform/themes/default",
-            animation: "./arkform/animations/default",
+            // sets the default theme class
+            themepack: "arkform-default-theme",
+
+            // sets the default animation class
+            animation: "arkform-default-animation",
         },
     }
 })
@@ -67,9 +73,10 @@ Arkform supports multiple themes within a single project. You can download a tem
 Here is an example layout for managing multiple themes in one project.
 
 ```tree
+@
 ├── animations
-│   └── default
-│       └── main.scss
+│   ├── default.ts
+│   ├── yourAnimation.ts
 └── themes
     ├── default
     │   ├── main.scss
@@ -79,7 +86,6 @@ Here is an example layout for managing multiple themes in one project.
         ├── main.scss
         ├── reset.scss
         └── variables.scss
-
 ```
 
 You dont need to use this layout but it makes it easy to define multiple form themes and switch between them. 

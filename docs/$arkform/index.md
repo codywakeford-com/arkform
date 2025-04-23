@@ -1,24 +1,20 @@
 # $arkform
 
-Because of Arkforms event driven architecture Arkform can provide functions that can be called from anywhere in the application.
+Arkform exposes a powerful global API you can tap into from anywhere in your app. Thanks to its event-driven architecture, you can programmatically interact with forms, groups, and inputs without needing to pass references around manually.
 
-The `$arkform` object is globally available with nuxt.
 
-## Usage
+## Getting Started
 
-You can access the `$arkform` object by using the composable `useArkForm`.
+Use the `useArkForm` composable to access the `$arkform` API.
 
 ```typescript
 const $arkform = useArkForm()
 ```
 
-## Interface
+## Interface Overview
+Every `<ark-input>`, `<ark-group>`, and `<ark-form>` component supports a unique id, which can be synced via v-model:id. All $arkform methods expect that id as their target reference.
 
-The id of any `<ark-input/>`, `<ark-group/>` and `<ark-form/>` can be retrived using `v-model:id` on the elements.
-
-Some functions are agnostic of the element type. You can clear errors of just a single input or clear all errors in a form. Whereas you cant submit a input. 
-
-Always pass the `id` of the element your trying to operate on.
+Some methods are universal across all element types (e.g., reset, clearErrors), while others are specific to forms or groups.
 
 ```typescript
 interface $Arkform {

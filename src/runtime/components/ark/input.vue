@@ -38,13 +38,13 @@
             <TransitionGroup
                 v-else
                 class="ark-errors"
-                name="list"
+                name="arkform"
                 tag="ul"
                 :data-ark-errors="name"
-                @before-enter="defaultAnimation.beforeEnter"
-                @enter="defaultAnimation.enter"
-                @before-leave="defaultAnimation.beforeLeave"
-                @leave="defaultAnimation.leave"
+                @before-enter="animation.beforeEnter"
+                @enter="animation.enter"
+                @before-leave="animation.beforeLeave"
+                @leave="animation.leave"
             >
                 <li
                     class="ark-error"
@@ -66,12 +66,13 @@ import { useArkForm } from "../../composables/useArkform"
 import { type } from "arktype"
 import { componentsInit } from "../../services/init/componentsInit"
 import { mountInput } from "../../controllers/mount.controller"
-import { defaultAnimation } from "../../controllers/animation.controller"
 import { useInputId } from "../../composables/initId"
 import { useInputModelSync } from "../../composables/useModelSync"
+import { useArkformConfig } from "../../composables/useArkformConfig"
 
 const $arkform = useArkForm()
 const groupId = inject<Ref<string | null>>("group-id", ref(null))
+const animation = useArkformConfig().animations["default"]
 const formId = inject<Ref<string>>("form-id")
 
 if (!formId) {
