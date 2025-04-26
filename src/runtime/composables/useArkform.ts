@@ -1,3 +1,4 @@
+import { arkAnimations } from "../services/animation.service"
 import { getIdsFromId, uuid } from "../services/utils/uuid"
 import { validateInput } from "../services/validation/validateInput"
 import { useArkFormStore } from "../stores/forms"
@@ -21,7 +22,7 @@ const $arkform = {
             throw new Error(`useInput(): Input "${inputId}" not found in form "${formId}"`)
         }
 
-        return toRefs(input) // now this will work beautifully
+        return toRefs(input)
     },
 
     useForm(id: string): UseArkForm {
@@ -114,8 +115,6 @@ const $arkform = {
 
         const inputs: ArkInputs = $forms.state[formId].groups[groupId].inputs
 
-        console.log(toRaw(inputs))
-
         const names = computed(() => {
             return Object.values(inputs).map((input: any) => input.name)
         })
@@ -155,7 +154,6 @@ const $arkform = {
             valid,
         }
 
-        console.log(toRaw(out))
         return out
     },
 
@@ -241,6 +239,10 @@ const $arkform = {
             const group = $arkform.useGroup(id)
             group.items.value.splice(index, 1)
         },
+    },
+
+    animations: {
+        ...arkAnimations.transitions,
     },
 }
 

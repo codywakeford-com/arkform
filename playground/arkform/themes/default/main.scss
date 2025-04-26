@@ -2,8 +2,12 @@
 
 /** Theme namespace */
 .arkform-theme-default {
+    button {
+        min-height: 30px;
+        margin-top: 10px;
+    }
 
-    .ark-form,
+    &.ark-form,
     .ark-group {
         display: flex;
         position: relative;
@@ -13,27 +17,23 @@
         gap: 15px;
         max-width: 350px;
         color: var(--ark-color-text);
+    }
+
+
+    .ark-reset {
+        position: absolute;
+        top: -15px;
+        right: -5px;
+        z-index: 5;
 
         button {
-            min-height: 30px;
-            margin-top: 10px;
-        }
+            background: none;
+            color: white;
+            border: none;
+            cursor: pointer;
 
-        .ark-form-reset-button {
-            position: absolute;
-            top: -15px;
-            right: -5px;
-            z-index: 5;
-
-            button {
-                background: none;
-                color: white;
-                border: none;
-                cursor: pointer;
-
-                &:hover {
-                    text-decoration: underline;
-                }
+            &:hover {
+                text-decoration: underline;
             }
         }
     }

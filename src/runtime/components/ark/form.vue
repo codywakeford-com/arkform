@@ -8,7 +8,7 @@
             [theme]: !!theme,
         }"
     >
-        <div v-if="reset" class="ark-form-reset-button">
+        <div v-if="reset" class="ark-reset">
             <button @click="$arkform.reset(formId)" :data-ark-reset="name">reset</button>
         </div>
         <slot />

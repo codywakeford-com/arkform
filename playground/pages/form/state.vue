@@ -10,7 +10,11 @@
             v-model:id="formId"
             v-model:names="names"
         >
-            <ark-input name="email" ark="string.email"></ark-input>
+            <ark-input
+                v-model:validated="inputValidated"
+                name="email"
+                ark="string.email"
+            ></ark-input>
             <ark-input name="message"></ark-input>
             <ark-input name="message2"></ark-input>
             <ark-input name="message3"></ark-input>
@@ -42,6 +46,7 @@ const perf = ref()
 const names = ref()
 const validated = ref()
 const state = ref()
+const inputValidated = ref()
 
 console.log(valid)
 </script>

@@ -14,6 +14,7 @@ export default defineConfig({
                     { text: "Introduction", link: "/overview" },
                     { text: "First Form", link: "/first-form" },
                     { text: "Installation", link: "/installation" },
+                    { text: "Themes", link: "/themes" },
                 ],
             },
             {

@@ -41,10 +41,10 @@
                 name="arkform"
                 tag="ul"
                 :data-ark-errors="name"
-                @before-enter="animation.beforeEnter"
-                @enter="animation.enter"
-                @before-leave="animation.beforeLeave"
-                @leave="animation.leave"
+                @before-enter="$animation.beforeEnter"
+                @enter="$animation.enter"
+                @before-leave="$animation.beforeLeave"
+                @leave="$animation.leave"
             >
                 <li
                     class="ark-error"
@@ -68,13 +68,10 @@ import { componentsInit } from "../../services/init/componentsInit"
 import { mountInput } from "../../controllers/mount.controller"
 import { useInputId } from "../../composables/initId"
 import { useInputModelSync } from "../../composables/useModelSync"
-import { useArkformConfig } from "../../composables/useArkformConfig"
 
 const $arkform = useArkForm()
 const groupId = inject<Ref<string | null>>("group-id", ref(null))
-const animation = useArkformConfig().animations["default"]
 const formId = inject<Ref<string>>("form-id")
-
 if (!formId) {
     throw new Error("[Arkform] Missing <form-id> injection")
 }
@@ -84,7 +81,7 @@ type ModelType = typeof inputType.infer
 
 const validModel = defineModel<boolean | null>("valid")
 const modelValue = defineModel<any | null>()
-const validatedModel = defineModel<ModelType | null>("validated")
+const validatedModel = defineModel<ModelType | null>("validated", { default: null })
 const errorsModel = defineModel<string[]>("errors", { default: [] })
 const idModel = defineModel<string>("id", { default: null })
 const stateModel = defineModel<UseArkInput>("state", { default: null })
@@ -121,6 +118,7 @@ interface Props {
     preset?: string | null
     textarea?: boolean
     optional?: boolean
+    animation?: string
     checkbox?: boolean
     validated?: null | ModelType
     valid?: null | boolean
@@ -136,11 +134,13 @@ const {
     textarea = false,
     checkbox = false,
     optional = false,
+    animation = "default",
 
     errors = [],
-
     ark = [],
 } = defineProps<Props>()
+
+const $animation = $arkform.animations[animation]
 
 function onInput() {
     bus.emit(`${formId}:input`)

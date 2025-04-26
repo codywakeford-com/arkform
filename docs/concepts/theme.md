@@ -31,32 +31,22 @@ mkdir -p arkform/animations
 # Default theme install
 curl -L -o ./default-theme.zip https://github.com/codywakeford-com/arkform/blob/master/arkform/themes/default/default-theme.zip
 
-# Default animation
-curl -L -o ./default-animation.zip https://github.com/codywakeford-com/arkform/blob/master/arkform/themes/default/default-animation.zip
-
 # Unzip
 unzip ./arkform-default-theme.zip -d ./arkform/themes
-unzip ./arkform-default-animation.zip -d ./arkform/animation
 
 # Clean up
 rm default-theme.zip
-rm default-animation.zip
 ```
 
 Of course if you want to browse these files before hand visit [github](https://github.com/codywakeford-com/arkform/blob/master/ark-themes/).
 
-You can specify a theme in `nuxt.config.ts`.
+You can specify a theme in `nuxt.config.ts`. All `css` and `scss` will be auto registered from this folder.
 
 ```typescript
 export default defineNuxtConfig({
     arkform: {
-        style: {
-            // sets the default theme class
-            themepack: "arkform-default-theme",
-
-            // sets the default animation class
-            animation: "arkform-default-animation",
-        },
+        // A folder path to hold themes and animations.
+        root: "arkform",
     }
 })
 ```
@@ -73,15 +63,15 @@ Arkform supports multiple themes within a single project. You can download a tem
 Here is an example layout for managing multiple themes in one project.
 
 ```tree
-@
+arkroot
 ├── animations
 │   ├── default.ts
-│   ├── yourAnimation.ts
+│   └── yourAnimation.ts
 └── themes
     ├── default
     │   ├── main.scss
     │   ├── reset.scss
-    │   ├── variables.scss
+    │   └── variables.scss
     └── authForms
         ├── main.scss
         ├── reset.scss

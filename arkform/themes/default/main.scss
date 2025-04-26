@@ -3,6 +3,39 @@
 /** Theme namespace */
 .arkform-theme-default {
 
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    font-family: var(--ark-font-family);
+    background: var(--ark-bg-form);
+    gap: 15px;
+    max-width: 350px;
+    color: var(--ark-color-text);
+
+    button {
+        min-height: 30px;
+        margin-top: 10px;
+    }
+
+    .ark-reset {
+        position: absolute;
+        top: -15px;
+        right: -5px;
+        z-index: 5;
+
+        button {
+            background: none;
+            color: white;
+            border: none;
+            cursor: pointer;
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
+
+
     .ark-form,
     .ark-group {
         display: flex;
@@ -19,7 +52,7 @@
             margin-top: 10px;
         }
 
-        .ark-form-reset-button {
+        .ark-reset {
             position: absolute;
             top: -15px;
             right: -5px;
@@ -36,6 +69,7 @@
                 }
             }
         }
+
     }
 
     // Ark Input
@@ -123,6 +157,7 @@
             font-size: 0.9rem;
             font-family: var(--ark-font-family);
         }
+
     }
 
     // Errors

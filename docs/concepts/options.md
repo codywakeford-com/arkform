@@ -7,9 +7,15 @@ Here you can specify a file path to override the arkform default theme.
 ```typescript
 export default defineNuxtConfig({
     arkform: {
+        // Sets the default theme
         theme: "default",
     }
 })
+```
+Themes can be overridden by passing a theme name to `<ark-form />`, `<ark-group />` or `<ark-input />` elements.
+
+```html
+<ark-input theme="myTheme" />
 ```
 
 ## Error Messages
@@ -82,7 +88,6 @@ export default defineNuxtConfig({
         },
     }
 })
-
 ```
 
 ## Password

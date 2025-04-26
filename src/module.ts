@@ -13,8 +13,8 @@ import { arkDefaultAnimation } from "./runtime/controllers/animation.controller"
 // Module options TypeScript interface definition
 export interface ModuleOptions {
     /** */
-    styleRoot: string
-    animations: VueTransitions
+    root: string
+    theme: string
     errors: {
         [arkValidator: string]: string
     }
@@ -31,10 +31,8 @@ export default defineNuxtModule<ModuleOptions>({
 
     // Default configuration options of the Nuxt module
     defaults: {
-        styleRoot: "arkform",
-        animations: {
-            default: arkDefaultAnimation,
-        },
+        root: "arkform",
+        theme: "default",
         errors: {
             "string.email": "Please enter a valid email.",
             "string > 0": "This field is required.",
@@ -146,7 +144,7 @@ export default defineNuxtModule<ModuleOptions>({
 
         await installModule("@pinia/nuxt")
 
-        const themeDir = resolve(_nuxt.options.rootDir, options.styleRoot)
+        const themeDir = resolve(_nuxt.options.rootDir, options.root)
         addCssFilesFromDir(themeDir, _nuxt)
 
         addImportsDir(resolve(__dirname, "runtime/composables"))
@@ -161,6 +159,8 @@ function addCssFilesFromDir(directory: string, _nuxt: any) {
     files.forEach((file) => {
         const filePath = resolve(directory, file)
         const stat = fs.statSync(filePath)
+
+        console.log("resolving", filePath)
 
         if (stat.isDirectory()) {
             // If it's a directory, recurse into it
