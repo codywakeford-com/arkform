@@ -11,7 +11,6 @@ import fs from "fs"
 import { existsSync } from "node:fs"
 import { useArkForm } from "./runtime/composables/useArkform"
 import { resolve } from "node:path"
-import { createPinia } from "pinia"
 
 // Module options TypeScript interface definition
 export interface ModuleOptions {}
@@ -25,14 +24,14 @@ export default defineNuxtModule<ModuleOptions>({
     defaults: {},
 
     async setup(options, _nuxt) {
+        await installModule("@pinia/nuxt")
         const resolver = createResolver(import.meta.url)
 
         addComponentsDir({
             path: resolver.resolve(__dirname, "runtime/components"),
         })
-
-        await installModule("@pinia/nuxt")
-        addPlugin(_nuxt.options.rootDir, "runtime/plugins/pinia")
+        //await installModule("@pinia/nuxt")
+        addPlugin("runtime/plugins/pinia")
 
         // Load arkformConfig
         const arkformConfig = resolver.resolve(_nuxt.options.rootDir, "arkform.config.ts")
