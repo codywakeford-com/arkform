@@ -24,7 +24,6 @@ import { mountForm } from "../../controllers/mount.controller"
 import { useFormModelSync } from "../../composables/useModelSync"
 import { useFormId } from "../../composables/initId"
 
-const $forms = useArkFormStore()
 const $arkform = useArkForm()
 const bus = useBus()
 
@@ -68,7 +67,7 @@ const {
     id = "",
     name = "",
     modelValue = {},
-    theme = useArkForm().config.theme,
+    theme = "default",
     animation = "default",
 } = defineProps<{
     componentId?: "ark-form"

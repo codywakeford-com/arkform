@@ -16,7 +16,9 @@ interface VueTransition {
     leave: (el: Element, done: () => void) => void
 }
 
-export type ArkformConfig = {
+export type ArkformConfig = Partial<ArkformConfigFull>
+
+export type ArkformConfigFull = {
     /**Root style dir */
     root: string
 
@@ -34,7 +36,7 @@ export type ArkformConfig = {
     }
 }
 
-export let arkConfigDefaults: ArkformConfig = {
+export let arkConfigDefaults: ArkformConfigFull = {
     root: "arkform",
     theme: "default",
     animations: {
@@ -44,13 +46,17 @@ export let arkConfigDefaults: ArkformConfig = {
     password: passwordDefaults,
 }
 
-export function defineArkformConfig(userConfig?: Partial<ArkformConfig>) {
+export function defineArkformConfig(userConfig?: ArkformConfig) {
     console.log("defineArkConfig() fired")
+
+    console.log("userConfig", userConfig)
 
     const mergedConfig = merge({}, arkConfigDefaults, userConfig || {})
 
     const arkFormStore = useArkForm()
     arkFormStore.config = mergedConfig
+
+    console.log("merged", mergedConfig)
 
     console.log("[Arkform]: Final merged config", mergedConfig)
 

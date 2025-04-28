@@ -11,6 +11,7 @@ import fs from "fs"
 import { existsSync } from "node:fs"
 import { useArkForm } from "./runtime/composables/useArkform"
 import { resolve } from "node:path"
+import { defineArkformConfig } from "./runtime/controllers/config.controller"
 
 // Module options TypeScript interface definition
 export interface ModuleOptions {}
@@ -24,18 +25,8 @@ export default defineNuxtModule<ModuleOptions>({
     defaults: {},
 
     async setup(options, _nuxt) {
-        await installModule("@pinia/nuxt")
         const resolver = createResolver(import.meta.url)
-
-        addComponentsDir({
-            path: resolver.resolve(__dirname, "runtime/components"),
-        })
-        //await installModule("@pinia/nuxt")
-        addPlugin("runtime/plugins/pinia")
-
-        // Load arkformConfig
-        const arkformConfig = resolver.resolve(_nuxt.options.rootDir, "arkform.config.ts")
-        const userConfig = require(arkformConfig).default
+        await installModule("@pinia/nuxt")
 
         // Give permission for local module //
         _nuxt.options.vite ??= {}
@@ -44,7 +35,15 @@ export default defineNuxtModule<ModuleOptions>({
         _nuxt.options.vite.server.fs.allow ??= []
         _nuxt.options.vite.server.fs.allow.push(resolver.resolve(__dirname, ".."))
 
+        // Load arkformConfig
+        const arkformConfig = resolver.resolve(_nuxt.options.rootDir, "arkform.config.ts")
+        const userConfig = require(arkformConfig).default
+
+        defineArkformConfig(userConfig)
+
         const $arkformConfig = useArkForm().config
+
+        console.log("config", $arkformConfig)
 
         const themeDir = resolver.resolve(
             _nuxt.options.rootDir,
@@ -60,6 +59,15 @@ export default defineNuxtModule<ModuleOptions>({
         }
 
         addImportsDir(resolver.resolve(__dirname, "runtime/composables"))
+        addPlugin({
+            src: resolver.resolve("./runtime/plugins/pinia"),
+            mode: "all",
+            order: -100, // lower runs earlier
+        })
+        addComponentsDir({
+            path: resolver.resolve(__dirname, "runtime/components"),
+        })
+
         addImportsDir(resolver.resolve("runtime/controllers"))
     },
 })

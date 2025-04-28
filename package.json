@@ -22,7 +22,7 @@
         "runtime"
     ],
     "scripts": {
-        "prepack": "nuxt-module-build build",
+        "build": "nuxt-module-build build",
         "dev": "nuxi dev playground",
         "dev:build": "nuxi build playground",
         "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",
@@ -70,9 +70,6 @@
         "unbuild": "^3.5.0",
         "vitest": "^3.1.1",
         "vue-tsc": "^2.2.8"
-    },
-    "peerDependencies": {
-        "@pinia/nuxt": "^0.11.0"
     },
     "packageManager": "pnpm@9.15.3+sha512.1f79bc245a66eb0b07c5d4d83131240774642caaa86ef7d0434ab47c0d16f66b04e21e0c086eb61e62c77efc4d7f7ec071afad3796af64892fae66509173893a"
 }
