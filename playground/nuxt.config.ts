@@ -1,5 +1,7 @@
+import Arkform from "../src/module"
+
 export default defineNuxtConfig({
-    modules: ["../src/module", "@nuxt/icon"],
+    modules: [Arkform, "@nuxt/icon"],
     devtools: { enabled: true },
     compatibilityDate: "2025-04-15",
 
@@ -7,9 +9,11 @@ export default defineNuxtConfig({
         dirs: ["./components/"],
     },
 
-    css: ["@/style/main.scss"],
+    devServer: {
+        port: 3321,
+    },
 
-    arkform: {},
+    css: ["@/style/main.scss"],
 
     vite: {
         server: {

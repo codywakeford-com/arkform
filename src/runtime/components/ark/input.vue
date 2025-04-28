@@ -140,7 +140,7 @@ const {
     ark = [],
 } = defineProps<Props>()
 
-const $animation = $arkform.animations[animation]
+const $animation = $arkform.config.animations[animation]
 
 function onInput() {
     bus.emit(`${formId}:input`)

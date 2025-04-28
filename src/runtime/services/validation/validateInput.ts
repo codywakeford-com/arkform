@@ -62,7 +62,7 @@ function formatArkValidator(arkValidator: any) {
     return arkValidator
 }
 
-function getErrorMessages(arkValidator: any, inputId: string) {
+function getErrorMessages(arkValidator: any, inputId: string): string[] {
     const $arkform = useArkForm()
     arkValidator = formatArkValidator(arkValidator)
 
@@ -76,16 +76,7 @@ function getErrorMessages(arkValidator: any, inputId: string) {
     }
 
     const defaultError = result[0].problem.split("(was)")[0]
-
-    const options = useRuntimeConfig().public.arkform as ModuleOptions
-
-    let customErrors = null
-
-    if (options.errors) {
-        customErrors = options.errors
-    } else {
-        return [defaultError]
-    }
+    const customErrors = useArkForm()?.config?.errors || {}
 
     let errors = []
     let usingCustomError = false

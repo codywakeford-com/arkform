@@ -1,10 +1,29 @@
-import { arkAnimations } from "../services/animation.service"
+import { arkConfigDefaults, type ArkformConfig } from "../controllers/config.controller"
 import { getIdsFromId, uuid } from "../services/utils/uuid"
 import { validateInput } from "../services/validation/validateInput"
 import { useArkFormStore } from "../stores/forms"
 import { useBus } from "./useBus"
+import { ref } from "vue"
 
-const $arkform = {
+type $Arkform = {
+    useInput: (id: string) => UseArkInput
+    useForm: (id: string) => UseArkForm
+    useGroup: (id: string) => UseArkGroup
+    clearErrors: (id: string) => void
+    reset: (id: string) => void
+    clearInputs: (id: string) => void
+    validate: (id: string) => boolean
+    form: {
+        submit: (id: string) => void
+    }
+    group: {
+        add: (id: string, clearInputs: boolean) => void
+        remove: (id: string, index: number) => void
+    }
+    config: ArkformConfig
+}
+
+let $arkform: $Arkform = {
     useInput(id: string): UseArkInput {
         const $forms = useArkFormStore()
         const { type, formId, groupId, inputId } = getIdsFromId(id)
@@ -241,9 +260,7 @@ const $arkform = {
         },
     },
 
-    animations: {
-        ...arkAnimations.transitions,
-    },
+    config: arkConfigDefaults,
 }
 
 export function useArkForm() {

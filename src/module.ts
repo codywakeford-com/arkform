@@ -5,23 +5,16 @@ import {
     addComponentsDir,
     installModule,
     addImportsDir,
+    addImports,
 } from "@nuxt/kit"
 import fs from "fs"
+import { existsSync } from "node:fs"
+import { useArkForm } from "./runtime/composables/useArkform"
 import { resolve } from "node:path"
-import { arkDefaultAnimation } from "./runtime/controllers/animation.controller"
+import { createPinia } from "pinia"
 
 // Module options TypeScript interface definition
-export interface ModuleOptions {
-    /** */
-    root: string
-    theme: string
-    errors: {
-        [arkValidator: string]: string
-    }
-    password: {
-        [validator: string]: string[]
-    }
-}
+export interface ModuleOptions {}
 
 export default defineNuxtModule<ModuleOptions>({
     meta: {
@@ -29,127 +22,46 @@ export default defineNuxtModule<ModuleOptions>({
         configKey: "arkform",
     },
 
-    // Default configuration options of the Nuxt module
-    defaults: {
-        root: "arkform",
-        theme: "default",
-        errors: {
-            "string.email": "Please enter a valid email.",
-            "string > 0": "This field is required.",
-            "string>0": "This field is required.",
-            "string>6": "Must be over length 6",
-
-            // Password regex
-            "/^(?=.*[a-z])/": "Password must contain at least one lowercase letter.",
-            "/^(?=.*[A-Z])/": "Password must contain at least one uppercase letter.",
-            "/^(?=.*\\d)/": "Password must contain at least one number.",
-            "/^(?=.*[!@#$%^&*()_\\-+=<>?{}[\\]~])/":
-                "Password must contain at least one special character.",
-            "/.{8,}$/": "Password must be at least 8 characters long.",
-            "/.{6,}$/": "Password must be at least 6 characters long.",
-            "/.{12,}$/": "Password must be at least 6 characters long.",
-            "/^(?!.*(password|12345|qwerty|abc)).*$/":
-                "Password cannot contain common words like 'password', '12345', or 'qwerty'.",
-            "/^\\S+$/": "Password cannot contain spaces.",
-            "/^(?=.*[a-z])(?=.*[A-Z]).+$/":
-                "Password must contain both uppercase and lowercase letters.",
-            "/^(?=.*[^a-zA-Z0-9]).+$/":
-                "Password must contain at least one non-alphanumeric character.",
-            "/^(?!.*(.)\\1{2,}).+$/": "Password cannot have repeated characters.",
-            '/^(?=.*[!@#$%^&*(),.?":{}|<>]).+$/':
-                "Password must contain at least one special character.",
-            "/^(?!.*(?:123|234|345|456|567|678|789|abc|bcd|cde|def)).*$/":
-                "Password cannot contain sequential characters.",
-            "/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/.*/":
-                "Please provide a valid email address.",
-        },
-
-        password: {
-            weak: [
-                // At least one digit
-                "/^(?=.*\\d)/",
-
-                // Minimum length of 6 characters
-                "/.{6,}$/",
-            ],
-            medium: [
-                // At least one lowercase letter
-                "/^(?=.*[a-z])/",
-
-                // At least one uppercase letter
-                "/^(?=.*[A-Z])/",
-
-                // At least one digit
-                "/^(?=.*\\d)/",
-
-                // Minimum length of 8 characters
-                "/.{8,}$/",
-            ],
-            strong: [
-                // At least one lowercase letter
-                "/^(?=.*[a-z])/",
-
-                // At least one uppercase letter
-                "/^(?=.*[A-Z])/",
-
-                // At least one digit
-                "/^(?=.*\\d)/",
-
-                // At least one special character
-                "/^(?=.*[!@#$%^&*()_\\-+=<>?{}[\\]~])/",
-
-                // Minimum length of 8 characters
-                "/.{8,}$/",
-
-                // No spaces
-                "/^\\S+$/",
-            ],
-            bulletproof: [
-                // At least one lowercase letter
-                "/^(?=.*[a-z])/",
-
-                // At least one uppercase letter
-                "/^(?=.*[A-Z])/",
-
-                // At least one digit
-                "/^(?=.*\\d)/",
-
-                // At least one special character
-                "/^(?=.*[!@#$%^&*()_\\-+=<>?{}[\\]~])/",
-
-                // Minimum length of 12 characters
-                "/.{12,}$/",
-
-                // Does not contain common words like "password", "12345", "qwerty", "abc"
-                "/^(?!.*(password|12345|qwerty|abc)).*$/",
-
-                // No repeated characters (e.g. "aaa")
-                "/^(?!.*(.)\\1{2,}).*$/",
-
-                // No sequential characters (e.g. "123", "abc", "cde")
-                "/^(?!.*(?:123|234|345|456|567|678|789|abc|bcd|cde|def)).*$/",
-
-                // No spaces
-                "/^\\S+$/",
-            ],
-        },
-    },
+    defaults: {},
 
     async setup(options, _nuxt) {
         const resolver = createResolver(import.meta.url)
 
         addComponentsDir({
-            path: resolver.resolve("runtime/components"),
+            path: resolver.resolve(__dirname, "runtime/components"),
         })
 
         await installModule("@pinia/nuxt")
+        addPlugin(_nuxt.options.rootDir, "runtime/plugins/pinia")
 
-        const themeDir = resolve(_nuxt.options.rootDir, options.root)
-        addCssFilesFromDir(themeDir, _nuxt)
+        // Load arkformConfig
+        const arkformConfig = resolver.resolve(_nuxt.options.rootDir, "arkform.config.ts")
+        const userConfig = require(arkformConfig).default
 
-        addImportsDir(resolve(__dirname, "runtime/composables"))
+        // Give permission for local module //
+        _nuxt.options.vite ??= {}
+        _nuxt.options.vite.server ??= {}
+        _nuxt.options.vite.server.fs ??= {}
+        _nuxt.options.vite.server.fs.allow ??= []
+        _nuxt.options.vite.server.fs.allow.push(resolver.resolve(__dirname, ".."))
 
-        _nuxt.options.runtimeConfig.public.arkform = options
+        const $arkformConfig = useArkForm().config
+
+        const themeDir = resolver.resolve(
+            _nuxt.options.rootDir,
+            $arkformConfig?.root || "./arkform",
+        )
+
+        if (existsSync(themeDir)) {
+            addCssFilesFromDir(themeDir, _nuxt)
+            _nuxt.options.watch.push(themeDir)
+            _nuxt.options.alias["#arkform-theme"] = themeDir
+        } else {
+            console.warn(`[arkform] Theme directory ${themeDir} does not exist.`)
+        }
+
+        addImportsDir(resolver.resolve(__dirname, "runtime/composables"))
+        addImportsDir(resolver.resolve("runtime/controllers"))
     },
 })
 
@@ -163,10 +75,8 @@ function addCssFilesFromDir(directory: string, _nuxt: any) {
         console.log("resolving", filePath)
 
         if (stat.isDirectory()) {
-            // If it's a directory, recurse into it
             addCssFilesFromDir(filePath, _nuxt)
         } else if (file.endsWith(".css") || file.endsWith(".scss")) {
-            // If it's a CSS or SCSS file, add it to the Nuxt CSS array
             _nuxt.options.css.push(filePath)
         }
     })

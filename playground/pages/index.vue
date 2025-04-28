@@ -35,6 +35,11 @@
 </template>
 
 <script setup lang="ts">
+import { useArkForm } from "../../src/runtime/composables/useArkform"
+import { ref } from "vue"
+
+const $arkform = useArkForm()
+
 const form = ref()
 const errors = ref()
 const valid = ref()

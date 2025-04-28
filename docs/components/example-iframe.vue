@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import { onMounted } from "vue"
 
-const baseUrl = "http://localhost:3000"
+const baseUrl = "http://localhost:3500"
 
 interface Props {
     url?: string

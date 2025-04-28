@@ -56,22 +56,6 @@ useFormModelSync({
         errorsModel,
     },
 })
-interface Props {
-    componentId?: "ark-form"
-    submit?: Function | null
-    validation?: ValidationType
-    reset?: boolean
-    id?: string
-    name?: string
-    modelValue?: any
-    state?: any
-    errors?: string[]
-    names?: string[]
-    valid?: boolean | null
-    validated?: any | null
-    animation?: false | "default"
-    theme?: string
-}
 
 const {
     componentId = "ark-form",
@@ -84,10 +68,24 @@ const {
     id = "",
     name = "",
     modelValue = {},
-    theme = "arkform-theme-default",
-
+    theme = useArkForm().config.theme,
     animation = "default",
-} = defineProps<Props>()
+} = defineProps<{
+    componentId?: "ark-form"
+    submit?: Function | null
+    validation?: ValidationType
+    reset?: boolean
+    id?: string
+    name?: string
+    modelValue?: any
+    state?: any
+    errors?: string[]
+    names?: string[]
+    valid?: boolean | null
+    validated?: any | null
+    animation?: string | "default"
+    theme?: string
+}>()
 
 provide("form-name", name)
 

@@ -53,8 +53,6 @@ export const mountInput: Func<MountInput> = (P) => {
         //     input.matches.value = inputName
         // }
 
-        console.log("input object", inputData)
-
         if (groupId) {
             $forms.state[formId].groups[groupId].inputs[inputId] = inputData
             console.log("Input mounted:", $forms.state[formId].groups[groupId].inputs[inputId])

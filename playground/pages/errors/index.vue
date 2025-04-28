@@ -20,7 +20,6 @@
 <script setup lang="ts">
 const id = ref("")
 
-console.log(id)
 const errors = ref([])
 </script>
 
