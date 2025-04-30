@@ -3,6 +3,7 @@ import { getIdsFromId, uuid } from "../services/utils/uuid"
 import { validateInput } from "../services/validation/validateInput"
 import { useArkFormStore } from "../stores/forms"
 import { useBus } from "./useBus"
+import { ref } from "vue"
 
 type $Arkform = {
     useInput: (id: string) => UseArkInput
@@ -19,8 +20,9 @@ type $Arkform = {
         add: (id: string, clearInputs: boolean) => void
         remove: (id: string, index: number) => void
     }
-    config: ArkformConfig
+    config: Ref<ArkformConfig>
 }
+
 export function useArkForm() {
     let $arkform: $Arkform = {
         useInput(id: string): UseArkInput {
@@ -34,7 +36,7 @@ export function useArkForm() {
             const form = $forms.state[formId]
             if (!form) throw new Error(`useInput(): Form "${formId}" not found for "${id}"`)
 
-            const input = groupId
+            const input: ArkInput = groupId
                 ? form.groups?.[groupId]?.inputs?.[inputId]
                 : form.inputs?.[inputId]
 
@@ -261,7 +263,7 @@ export function useArkForm() {
             },
         },
 
-        config: arkConfigDefaults,
+        config: ref(arkConfigDefaults),
     }
 
     return $arkform

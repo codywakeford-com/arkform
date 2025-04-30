@@ -4,12 +4,14 @@ import { errorDefaults } from "../composables/config/errorDefaults"
 import { passwordDefaults } from "../composables/config/passwordDefaults"
 import { useArkForm } from "../composables/useArkform"
 import { arkDefaultAnimation } from "../style/animations/default"
+import { type } from "arktype"
+import { errorSets } from "../composables/config/errorSets"
 
-interface VueTransitions {
+export interface VueTransitions {
     [name: string]: VueTransition
 }
 
-interface VueTransition {
+export interface VueTransition {
     beforeEnter: (el: Element) => void
     enter: (el: Element, done: () => void) => void
     beforeLeave: (el: Element) => void
@@ -29,12 +31,26 @@ export type ArkformConfigFull = {
         [name: string]: VueTransition
     }
     errors: {
-        [arkValidator: string]: string
+        named: {
+            [name: string]: string[]
+        }
+        messages: {
+            [arkValidator: string]: string
+        }
     }
     password: {
         [validator: string]: string[]
     }
 }
+
+export const typesConfig = {
+    form: type({
+        firstName: "string | null",
+        lastName: "string | null",
+        email: "string | null",
+        password: "string | null",
+    }),
+} as const
 
 export let arkConfigDefaults: ArkformConfigFull = {
     root: "arkform",
@@ -42,23 +58,22 @@ export let arkConfigDefaults: ArkformConfigFull = {
     animations: {
         default: arkDefaultAnimation,
     },
-    errors: errorDefaults,
+    errors: {
+        named: errorSets,
+        messages: errorDefaults,
+    },
     password: passwordDefaults,
 }
 
 export function defineArkformConfig(userConfig?: ArkformConfig) {
-    console.log("defineArkConfig() fired")
-
     console.log("userConfig", userConfig)
 
     const mergedConfig = merge({}, arkConfigDefaults, userConfig || {})
 
     const arkFormStore = useArkForm()
-    arkFormStore.config = mergedConfig
+    Object.assign(arkFormStore.config.value, mergedConfig)
 
-    console.log("merged", mergedConfig)
+    console.log("[Arkform]: Final merged config", useArkForm().config.value)
 
-    console.log("[Arkform]: Final merged config", mergedConfig)
-
-    return mergedConfig
+    return useArkForm().config
 }

@@ -1,11 +1,12 @@
 <template>
     <div class="flex">
+        <!-- @vue-generic {typeof modelType.infer} -->
         <ark-form
             v-model="form"
             v-model:performance="perf"
+            v-model:validated="validated"
             v-model:errors="errors"
             v-model:valid="valid"
-            v-model:validated="validated"
             v-model:id="id"
         >
             <div class="inline">
@@ -35,12 +36,26 @@
 </template>
 
 <script setup lang="ts">
+import { type } from "arktype"
 import { useArkForm } from "../../src/runtime/composables/useArkform"
 import { ref } from "vue"
 
 const $arkform = useArkForm()
 
-const form = ref()
+const modelType = type({
+    firstName: "string | null",
+    lastName: "string | null",
+    email: "string | null",
+    password: "string | null",
+})
+
+const form = ref<typeof modelType.infer>({
+    firstName: null,
+    lastName: null,
+    email: null,
+    password: null,
+})
+
 const errors = ref()
 const valid = ref()
 const perf = ref()

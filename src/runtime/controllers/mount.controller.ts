@@ -12,12 +12,14 @@ type MountInput = {
         inputName: string
         optional?: boolean
         preset?: any | null
+        animation: Style["animation"]
+        theme: Style["theme"]
     }
     Return: void
 }
 
 export const mountInput: Func<MountInput> = (P) => {
-    const { id, preset, arkValidators, matches, inputName, optional } = P
+    const { id, preset, arkValidators, matches, inputName, optional, animation, theme } = P
 
     if (!inputName) {
         console.warn("[Arkform] A unique name attribute for each <ark-input /> must be provided.")
@@ -38,6 +40,8 @@ export const mountInput: Func<MountInput> = (P) => {
             optional,
             matches,
             preset,
+            animation,
+            theme,
         })
 
         // if (matches) {
@@ -68,20 +72,28 @@ export const mountInput: Func<MountInput> = (P) => {
 type MountForm = {
     Params: {
         formId: string | undefined | null
+        animation: Style["animation"]
+        theme: Style["theme"]
+        defaults: Record<string, string>
     }
 
     Return: void
 }
 
 export const mountForm: Func<MountForm> = (P) => {
-    const { formId } = P
+    let { formId, animation, defaults, theme } = P
+    const $arkform = useArkForm()
+
+    if (!theme) {
+        theme = $arkform.config.value.theme || "default"
+    }
 
     const $forms = useArkFormStore()
     if (!formId) {
         throw new Error("Form id not found")
     }
 
-    const form = formFactory()
+    const form = formFactory({ animation, theme, defaults })
     $forms.state[formId] = form
 }
 

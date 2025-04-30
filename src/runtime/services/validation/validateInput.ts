@@ -23,10 +23,8 @@ export const validateInput: Func<Z> = (P) => {
         input.arkValidators.value?.push("string>0")
     }
 
-    for (const ark of input.arkValidators.value) {
-        const err = getErrorMessages(ark, id)
-        errors.push(...err)
-    }
+    const err = getErrorMessages([...input.arkValidators.value], id)
+    errors.push(...err)
 
     if (input.matches.value) {
         const inputToMatchId = getInputIdByName({
@@ -50,7 +48,9 @@ export const validateInput: Func<Z> = (P) => {
     return input.valid.value
 }
 
-function isArkError(data: any) {
+function isArkError(data: any): boolean {
+    if (!data) return false
+
     return data[" arkKind"] === "errors"
 }
 
@@ -62,34 +62,41 @@ function formatArkValidator(arkValidator: any) {
     return arkValidator
 }
 
-function getErrorMessages(arkValidator: any, inputId: string): string[] {
+export function getErrorMessages(arkValidators: string[], inputId: string): string[] {
     const $arkform = useArkForm()
-    arkValidator = formatArkValidator(arkValidator)
-
     const input = $arkform.useInput(inputId)
 
-    const InputValidator = type(arkValidator)
-    const result = InputValidator(input.value.value)
+    let validators = [...arkValidators]
+    let errors: string[] = []
+    const customErrorMessages = $arkform.config.value.errors?.messages || {}
+    const errorSet = $arkform.config.value.errors?.named || {}
 
-    if (!isArkError(result)) {
-        return []
-    }
+    for (let i = 0; i < validators.length; i++) {
+        let validator = validators[i]
 
-    const defaultError = result[0].problem.split("(was)")[0]
-    const customErrors = useArkForm()?.config?.errors || {}
-
-    let errors = []
-    let usingCustomError = false
-
-    for (let [validator, error] of Object.entries(customErrors)) {
-        if (validator.replace(" ", "") === arkValidator) {
-            errors.push(error)
-            usingCustomError = true
+        if (validator in errorSet) {
+            validators.push(...errorSet[validator])
+            continue
         }
-    }
 
-    if (!usingCustomError) {
-        errors.push(defaultError)
+        validator = formatArkValidator(validator)
+
+        let result: any
+        try {
+            const InputValidator = type(validator as any)
+            result = InputValidator(input.value.value)
+        } catch (e) {}
+
+        if (!isArkError(result)) continue
+
+        const defaultError = result[0].problem.split("(was)")[0]
+        const customError = customErrorMessages[validator]
+
+        if (customError) {
+            errors.push(customError)
+        } else {
+            errors.push(defaultError)
+        }
     }
 
     return errors

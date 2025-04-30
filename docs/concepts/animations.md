@@ -3,6 +3,7 @@
 To have full control over animations is a bit more tricky. Generally with form animations you will need to calculate height for elements dynamically so javascript is naturally the tools of choice. 
 
 **Animations use the `<VueTransition />` api.**
+You can find more information about this api [here](https://vuejs.org/guide/built-ins/transition#javascript-hooks)
 
 You can define an animation in the `nuxt.config.ts`.
 

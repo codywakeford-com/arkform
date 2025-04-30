@@ -1,6 +1,11 @@
 export {}
 
 declare global {
+    type Style = {
+        animation: string | null
+        theme: string | null
+    }
+
     type InputName = {
         id: string
         name: string
@@ -22,9 +27,8 @@ declare global {
 
     type ArkInput = Reactive<{
         name: string
-        errors: string[]
         validation: ValidationType
-        arkValidators: any[]
+        arkValidators: string[]
         optional: boolean
         valid: boolean | null
         value: any
@@ -33,6 +37,7 @@ declare global {
 
         /** If the input has been validated yet. */
         checked: boolean
+        style: Style
     }>
 
     type ArkForm = Reactive<{
@@ -40,6 +45,7 @@ declare global {
         groups: InputGroups
         inputs: Inputs
         validation: ValidationType
+        style: Style
     }>
 
     type ArkGroup = Reactive<{
@@ -47,6 +53,7 @@ declare global {
         inputs: Inputs
         items: any[]
         valid: boolean | null
+        style: Style
     }>
 
     interface UseArkInput {
@@ -54,7 +61,7 @@ declare global {
         name: Ref<string>
 
         /**A list of errors for this particular input. */
-        errors: Ref<string[]>
+        errors: ComputedRef<string[]>
 
         /**Validation strategy. Dictactes when a validation will fire.*/
         validation: Ref<"none" | "shy" | "eager">
@@ -135,6 +142,8 @@ declare global {
 
         /** An object containing all input objects. */
         inputs: Ref<Inputs>
+
+        style: Ref<Style>
 
         /**
         Validation strategy for the form. Dictactes

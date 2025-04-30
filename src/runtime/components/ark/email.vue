@@ -1,7 +1,5 @@
 <template>
-    <ark-input name="email" type="text" :ark="['string.email']">
-        <slot />
-    </ark-input>
+    <ark-input name="email" type="text" :ark="['string.email']"></ark-input>
 </template>
 
 <script setup lang="ts"></script>

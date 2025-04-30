@@ -3,7 +3,7 @@
         name="password"
         v-model="input"
         :type="typeState"
-        :ark="arkformConfig.password[strength] || []"
+        :ark="['password.v1']"
         v-model:id="id"
         matches="confirm-password"
     >
@@ -17,7 +17,6 @@
                 <Icon v-else name="streamline:invisible-1-solid" />
             </div>
         </ark-aft>
-        <slot />
     </ark-input>
 </template>
 
@@ -26,7 +25,7 @@ const viewPassword = ref(false)
 const input = ref("123123")
 const id = ref("")
 const bus = useBus()
-const arkformConfig = useArkformConfig()
+const $arkform = useArkForm()
 
 function toggleRef() {
     viewPassword.value = !viewPassword.value
@@ -34,9 +33,8 @@ function toggleRef() {
 
 const typeState = computed(() => (viewPassword.value ? "text" : "password"))
 
-import { useArkformConfig } from "../../composables/useArkformConfig"
+import { useArkForm } from "../../composables/useArkform"
 import { useBus } from "../../composables/useBus"
-import { generatePassword } from "../../services/utils/generatePassword"
 
 interface Props {
     strength?: "none" | "weak" | "medium" | "strong" | "bulletproof"

@@ -15,23 +15,27 @@ export const componentsInit: Func<Z> = (P) => {
     const { slots, components } = P
     const slotItems = ref<any[]>([])
 
-    if (slots.default) {
-        slotItems.value = slots.default()
+    const raw = slots?.default?.()
+    if (!Array.isArray(raw)) return
 
-        slotItems.value.forEach((comp) => {
-            const name = comp?.type?.props?.componentId?.default ?? null
+    slotItems.value = raw
 
-            if (name && name.includes("ark-")) {
-                const componentName = name.split("ark-")[1]
+    for (const comp of slotItems.value) {
+        const rawProps = comp?.type?.props
+        const rawId = rawProps?.componentId
 
-                if (Object.keys(components.value).includes(componentName)) {
-                    if (components.value[componentName]) {
-                        console.error("only one of each named <ark> component can be used at once.")
-                    }
+        const name = typeof rawId === "object" ? rawId.default : null
 
-                    components.value[componentName] = comp
-                }
+        if (name && name.includes("ark-")) {
+            const componentName = name.split("ark-")[1]
+
+            if (Object.keys(components.value).includes(componentName)) {
+                console.error(
+                    `Only one of each named <ark> component can be used at once. You have more than one <ark-${componentName} />`,
+                )
             }
-        })
+
+            components.value[componentName] = comp
+        }
     }
 }

@@ -4,8 +4,8 @@
         @submit.prevent
         class="ark-form"
         :class="{
-            [`arkform-animation-${animation}`]: !!animation,
-            [theme]: !!theme,
+            [`arkform-animation-${animation}`]: !!animationVal,
+            [`${themeVal}`]: !!themeVal,
         }"
     >
         <div v-if="reset" class="ark-reset">
@@ -15,25 +15,30 @@
     </form>
 </template>
 
-<script setup lang="ts">
-import { useArkFormStore } from "../../stores/forms"
+<script setup lang="ts" generic="T">
 import { submitForm } from "../../controllers/submitForm"
 import { useBus } from "../../composables/useBus"
 import { useArkForm } from "../../composables/useArkform"
 import { mountForm } from "../../controllers/mount.controller"
 import { useFormModelSync } from "../../composables/useModelSync"
 import { useFormId } from "../../composables/initId"
+import { type } from "arktype"
 
 const $arkform = useArkForm()
 const bus = useBus()
+const $arkconfig = $arkform.config
+
+type Validated<T> = { [K in keyof T]: string } | null
+type Expand<T> = { [K in keyof T]: T[K] }
+type ResolvedValidated = Expand<Validated<T>>
 
 const errorsModel = defineModel<string[]>("errors", { default: null })
 const idModel = defineModel<string>("id", { default: "" })
 const namesModel = defineModel<string[]>("names", { default: null })
 const stateModel = defineModel<any>("state", { default: null })
-const modelVal = defineModel<any>()
+const validatedModel = defineModel<ResolvedValidated>("validated")
+const modelVal = defineModel<T>({ default: {} })
 const validModel = defineModel<boolean | null>("valid", { default: null })
-const validatedModel = defineModel<any | null>("validated")
 const performanceModel = defineModel<number>("performance", { default: null })
 
 const formId = useFormId({
@@ -41,20 +46,6 @@ const formId = useFormId({
 })
 
 const formRef = computed(() => $arkform.useForm(formId.value))
-
-mountForm({ formId: formId.value })
-
-useFormModelSync({
-    formRef,
-    models: {
-        stateModel,
-        validModel,
-        validatedModel,
-        modelVal,
-        namesModel,
-        errorsModel,
-    },
-})
 
 const {
     componentId = "ark-form",
@@ -67,8 +58,9 @@ const {
     id = "",
     name = "",
     modelValue = {},
-    theme = "default",
-    animation = "default",
+    theme = null,
+    animation = null,
+    defaults = {},
 } = defineProps<{
     componentId?: "ark-form"
     submit?: Function | null
@@ -76,15 +68,47 @@ const {
     reset?: boolean
     id?: string
     name?: string
-    modelValue?: any
+    modelValue?: ModelType
     state?: any
+    defaults?: Record<string, string>
     errors?: string[]
     names?: string[]
     valid?: boolean | null
-    validated?: any | null
-    animation?: string | "default"
-    theme?: string
+    animation?: string | null
+    validated?: Validated<T>
+    theme?: string | null
 }>()
+
+const ModelTypeDef = type({
+    firstName: "string | null",
+    lastName: "string | null",
+    email: "string | null",
+    password: "string | null",
+})
+
+type ModelType = typeof ModelTypeDef.infer
+
+// Get active style
+const themeVal = computed(() => {
+    return theme ? theme : $arkconfig.value.theme
+})
+const animationVal = computed(() => {
+    return animation ? animation : null
+})
+
+mountForm({ formId: formId.value, animation, theme, defaults })
+
+useFormModelSync({
+    formRef,
+    models: {
+        stateModel,
+        validModel,
+        validatedModel,
+        modelVal,
+        namesModel,
+        errorsModel,
+    },
+})
 
 provide("form-name", name)
 

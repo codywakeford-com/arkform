@@ -9,7 +9,6 @@ import {
 } from "@nuxt/kit"
 import fs from "fs"
 import { existsSync } from "node:fs"
-import { useArkForm } from "./runtime/composables/useArkform"
 import { resolve } from "node:path"
 import { defineArkformConfig } from "./runtime/controllers/config.controller"
 
@@ -38,16 +37,12 @@ export default defineNuxtModule<ModuleOptions>({
         // Load arkformConfig
         const arkformConfig = resolver.resolve(_nuxt.options.rootDir, "arkform.config.ts")
         const userConfig = require(arkformConfig).default
+        const $arkformConfig = defineArkformConfig(userConfig)
 
-        defineArkformConfig(userConfig)
-
-        const $arkformConfig = useArkForm().config
-
-        console.log("config", $arkformConfig)
-
+        // Setup theme dir
         const themeDir = resolver.resolve(
             _nuxt.options.rootDir,
-            $arkformConfig?.root || "./arkform",
+            $arkformConfig?.value?.root || "./arkform",
         )
 
         if (existsSync(themeDir)) {
@@ -58,16 +53,17 @@ export default defineNuxtModule<ModuleOptions>({
             console.warn(`[arkform] Theme directory ${themeDir} does not exist.`)
         }
 
-        addImportsDir(resolver.resolve(__dirname, "runtime/composables"))
         addPlugin({
             src: resolver.resolve("./runtime/plugins/pinia"),
             mode: "all",
             order: -100, // lower runs earlier
         })
+
         addComponentsDir({
             path: resolver.resolve(__dirname, "runtime/components"),
         })
 
+        addImportsDir(resolver.resolve(__dirname, "runtime/composables"))
         addImportsDir(resolver.resolve("runtime/controllers"))
     },
 })

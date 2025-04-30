@@ -1,21 +1,16 @@
 <template>
-    <div :class="{ errors: inputRef?.errors?.value?.length }" class="ark-input-wrapper">
+    <div :class="{ errors: showErrors }" class="ark-input-wrapper">
         <div class="ark-label-container">
             <label v-if="components.label" class="ark-label">
                 <component :is="components.label" />
             </label>
 
-            <label
-                v-else
-                class="ark-label"
-                :class="{ error: inputRef.errors?.value?.length }"
-                :for="name"
-            >
-                {{ name }}:
+            <label v-else class="ark-label" :class="{ error: showErrors }" :for="name">
+                {{ name }}:''
             </label>
         </div>
 
-        <div class="ark-input-container" :class="{ error: inputRef.errors?.value?.length }">
+        <div class="ark-input-container" :class="{ error: showErrors }">
             <component :is="components.fore" />
             <input
                 :data-ark-input="name"
@@ -41,12 +36,13 @@
                 name="arkform"
                 tag="ul"
                 :data-ark-errors="name"
-                @before-enter="$animation.beforeEnter"
-                @enter="$animation.enter"
-                @before-leave="$animation.beforeLeave"
-                @leave="$animation.leave"
+                @before-enter="$animation?.beforeEnter"
+                @enter="$animation?.enter"
+                @before-leave="$animation?.beforeLeave"
+                @leave="$animation?.leave"
             >
                 <li
+                    v-if="showErrors"
                     class="ark-error"
                     v-for="(error, index) in inputRef?.errors?.value"
                     :key="index"
@@ -58,7 +54,7 @@
     </div>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts" generic="T">
 import { inject, ref, computed, useSlots } from "vue"
 import type { Slots } from "vue"
 import { useBus } from "../../composables/useBus"
@@ -72,6 +68,7 @@ import { useInputModelSync } from "../../composables/useModelSync"
 const $arkform = useArkForm()
 const groupId = inject<Ref<string | null>>("group-id", ref(null))
 const formId = inject<Ref<string>>("form-id")
+
 if (!formId) {
     throw new Error("[Arkform] Missing <form-id> injection")
 }
@@ -80,7 +77,7 @@ const inputType = type("string")
 type ModelType = typeof inputType.infer
 
 const validModel = defineModel<boolean | null>("valid")
-const modelValue = defineModel<any | null>()
+const modelValue = defineModel<ModelType | null>()
 const validatedModel = defineModel<ModelType | null>("validated", { default: null })
 const errorsModel = defineModel<string[]>("errors", { default: [] })
 const idModel = defineModel<string>("id", { default: null })
@@ -108,9 +105,9 @@ const components = ref({
 })
 interface Props {
     name: string
-    componentId?: "ark-input"
 
-    ark?: string | string[]
+    componentId?: "ark-input"
+    ark?: ArkValidators
     modelValue?: ModelType | null
     matches?: string
     slots?: Slots
@@ -139,7 +136,7 @@ const {
     ark = [],
 } = defineProps<Props>()
 
-const $animation = $arkform.config.animations[animation]
+const $animation = $arkform.config?.value?.animations?.[animation]
 
 function onInput() {
     bus.emit(`${formId}:input`)
@@ -171,6 +168,10 @@ useInputModelSync({
         modelValue,
         errorsModel,
     },
+})
+
+const showErrors = computed(() => {
+    return !!$arkform.useInput(inputId.value).errors.value.length
 })
 </script>
 
