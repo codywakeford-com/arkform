@@ -14,7 +14,7 @@
                 <ark-input name="lastName"></ark-input>
             </div>
 
-            <ark-input name="email" ark="string.email">
+            <ark-input name="email" :ark="['string.email']">
                 <ark-fore name="material-symbols:mail-rounded" />
             </ark-input>
 

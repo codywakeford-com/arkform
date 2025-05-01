@@ -1,3 +1,7 @@
+import type { ArkMessage } from "~/src/runtime/services/messages.service"
+type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never
+type ExpandUnion<T> = T extends any ? T : never
+
 export {}
 
 declare global {
@@ -11,15 +15,12 @@ declare global {
         name: string
     }
 
-    interface FormMetadata {
-        validateDelayTime: number
-    }
+    type ValidationTypeMap = "none" | "shy" | "eager"
+    type ValidationType = ExpandUnion<ValidationTypeMap>
 
-    type ValidationType = "none" | "shy" | "eager"
-
-    interface ArkInputs {
-        [key: string]: Input
-    }
+    type ArkInputs = Expand<{
+        [key: string]: Expand<ArkInput>
+    }>
 
     interface ArkGroups {
         [key: string]: ArkInputGroup
@@ -46,22 +47,25 @@ declare global {
         inputs: Inputs
         validation: ValidationType
         style: Style
+        loading: boolean
     }>
 
-    type ArkGroup = Reactive<{
-        name: string | null
-        inputs: Inputs
-        items: any[]
-        valid: boolean | null
-        style: Style
-    }>
+    type ArkGroup = Expand<
+        Reactive<{
+            name: string | null
+            inputs: Inputs
+            items: any[]
+            valid: boolean | null
+            style: Style
+        }>
+    >
 
-    interface UseArkInput {
+    type UseArkInput = Expand<{
         /**Name attr on <input />. This must be unique per form.*/
         name: Ref<string>
 
         /**A list of errors for this particular input. */
-        errors: ComputedRef<string[]>
+        errors: Ref<string[]>
 
         /**Validation strategy. Dictactes when a validation will fire.*/
         validation: Ref<"none" | "shy" | "eager">
@@ -94,9 +98,11 @@ declare global {
         validated: ComputedRef<{
             [key: string]: any
         } | null>
-    }
+    }>
 
-    type UseArkGroup = {
+    type UseArkMessage = Ref<Expand<ArkMessage[]>>
+
+    type UseArkGroup = Expand<{
         /** An object containing descendent input objects. */
         inputs: Inputs
 
@@ -127,13 +133,13 @@ declare global {
 
         /** A list of errors of all descendent inputs. */
         errors: ComputedRef<string[]>
-    }
+    }>
 
     type ArkForms = {
         [key: string]: ArkForm
     }
 
-    interface UseArkForm {
+    type UseArkForm = Expand<{
         /**An optional reference string */
         name: Ref<string | null>
 
@@ -171,5 +177,8 @@ declare global {
         value: ComputedRef<{
             [key: string]: string
         }>
-    }
+
+        /**Form loading state*/
+        loading: Ref<boolean>
+    }>
 }

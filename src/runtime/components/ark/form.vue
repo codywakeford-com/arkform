@@ -1,5 +1,6 @@
 <template>
     <form
+        :name="name || ''"
         :data-ark-form="name"
         @submit.prevent
         class="ark-form"
@@ -28,18 +29,23 @@ const $arkform = useArkForm()
 const bus = useBus()
 const $arkconfig = $arkform.config
 
-type Validated<T> = { [K in keyof T]: string } | null
-type Expand<T> = { [K in keyof T]: T[K] }
-type ResolvedValidated = Expand<Validated<T>>
+type Expand<T> = T extends object ? { [K in keyof T]: T[K] } : T
 
+type Validated<T extends Record<string, any>> = T extends object
+    ? { [K in keyof T]: string }
+    : never
+
+type ResolvedValidated<T extends Record<string, any>> = Expand<Validated<T>> | null
+
+const modelVal = defineModel<T>({ default: {} as T })
 const errorsModel = defineModel<string[]>("errors", { default: null })
 const idModel = defineModel<string>("id", { default: "" })
 const namesModel = defineModel<string[]>("names", { default: null })
-const stateModel = defineModel<any>("state", { default: null })
-const validatedModel = defineModel<ResolvedValidated>("validated")
-const modelVal = defineModel<T>({ default: {} })
+const stateModel = defineModel<ArkForm>("state", { default: null })
 const validModel = defineModel<boolean | null>("valid", { default: null })
+const validatedModel = defineModel<ResolvedValidated<T>>("validated", { default: null })
 const performanceModel = defineModel<number>("performance", { default: null })
+const isSubmitting = ref(false)
 
 const formId = useFormId({
     idModel,
@@ -56,27 +62,29 @@ const {
     state = {},
     errors = [],
     id = "",
-    name = "",
+    name = null,
     modelValue = {},
     theme = null,
     animation = null,
     defaults = {},
+    auth = null,
 } = defineProps<{
     componentId?: "ark-form"
     submit?: Function | null
     validation?: ValidationType
     reset?: boolean
     id?: string
-    name?: string
-    modelValue?: ModelType
+    name?: string | null
+    modelValue?: T
     state?: any
     defaults?: Record<string, string>
     errors?: string[]
     names?: string[]
     valid?: boolean | null
     animation?: string | null
-    validated?: Validated<T>
+    validated?: ResolvedValidated<T>
     theme?: string | null
+    auth?: "signin" | null
 }>()
 
 const ModelTypeDef = type({
@@ -96,7 +104,7 @@ const animationVal = computed(() => {
     return animation ? animation : null
 })
 
-mountForm({ formId: formId.value, animation, theme, defaults })
+mountForm({ formId: formId.value, animation, theme, defaults, name: name || "" })
 
 useFormModelSync({
     formRef,
@@ -110,11 +118,16 @@ useFormModelSync({
     },
 })
 
+// provide("form-id", formId)
 provide("form-name", name)
 
 onMounted(() => {
-    const onSubmit = () => {
+    const onSubmit = async () => {
         const start = performance.now()
+
+        if (auth) {
+            // handle firebase signin here
+        }
 
         submitForm({ submitFunction: submit, formId: formId.value })
         $arkform.useForm(formId.value).validation.value = "eager"

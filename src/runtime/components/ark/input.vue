@@ -6,7 +6,7 @@
             </label>
 
             <label v-else class="ark-label" :class="{ error: showErrors }" :for="name">
-                {{ name }}:''
+                {{ name }}:
             </label>
         </div>
 
@@ -20,13 +20,16 @@
                 v-model="inputRef.value.value"
                 v-bind="$attrs"
             />
-            <component :is="components.aft" />
+            <component v-if="components.aft" :is="components.aft" />
         </div>
 
         <div class="ark-help" v-if="components.help">
             <component :is="components.help" />
         </div>
-
+        <div class="ark-link" v-if="components.link">
+            <!-- <div :id="`input-link-${formId}`"></div> -->
+            <component v-if="components.link" :is="components.link" />
+        </div>
         <div class="ark-error-container">
             <component v-if="components.error" :is="components.error" />
 
@@ -56,7 +59,6 @@
 
 <script setup lang="ts" generic="T">
 import { inject, ref, computed, useSlots } from "vue"
-import type { Slots } from "vue"
 import { useBus } from "../../composables/useBus"
 import { useArkForm } from "../../composables/useArkform"
 import { type } from "arktype"
@@ -102,6 +104,7 @@ const components = ref({
     help: null,
     aft: null,
     fore: null,
+    link: null,
 })
 interface Props {
     name: string
@@ -110,7 +113,6 @@ interface Props {
     ark?: ArkValidators
     modelValue?: ModelType | null
     matches?: string
-    slots?: Slots
     preset?: string | null
     textarea?: boolean
     optional?: boolean
@@ -125,7 +127,6 @@ const {
     componentId = "ark-input",
     matches,
     name,
-    slots,
     preset = null,
     textarea = false,
     checkbox = false,
@@ -148,6 +149,7 @@ function onInput() {
 }
 
 componentsInit({ slots: useSlots(), components })
+
 mountInput({
     preset,
     id: inputId.value,

@@ -39,12 +39,19 @@
 
 <script setup lang="ts">
 const formId = ref()
-const form = ref()
+const form = ref({
+    email: "",
+    message: "",
+    message2: "",
+    message3: "",
+})
+
 const errors = ref()
 const valid = ref()
 const perf = ref()
 const names = ref()
 const validated = ref()
+const a = validated
 const state = ref()
 const inputValidated = ref()
 

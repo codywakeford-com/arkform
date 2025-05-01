@@ -5,7 +5,7 @@ interface Z {
         submitFunction: Function | null
         formId: string
     }
-    Return: void
+    Return: Promise<void>
 }
 
 export const submitForm: Func<Z> = async (P) => {
@@ -13,9 +13,16 @@ export const submitForm: Func<Z> = async (P) => {
 
     const $arkform = useArkForm()
 
-    const valid = $arkform.validate(formId)
+    const form = $arkform.useForm(formId)
+    form.loading.value = true
 
-    if (!valid) return
+    try {
+        const valid = $arkform.validate(formId)
 
-    if (submitFunction) submitFunction()
+        if (!valid) return
+
+        if (submitFunction) await submitFunction()
+    } finally {
+        form.loading.value = false
+    }
 }

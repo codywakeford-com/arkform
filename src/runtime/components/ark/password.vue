@@ -5,13 +5,9 @@
         :type="typeState"
         :ark="['password.v1']"
         v-model:id="id"
-        matches="confirm-password"
     >
+        <slot />
         <ark-aft>
-            <!-- <div class="flex-center" @click="generatePassword(id)"> -->
-            <!--     <Icon class="suggest-aft" name="material-symbols:settings-suggest" v-if="suggest" /> -->
-            <!-- </div> -->
-
             <div class="flex-center" @click="toggleRef">
                 <Icon v-if="viewPassword" name="streamline:visible-solid" />
                 <Icon v-else name="streamline:invisible-1-solid" />
@@ -22,6 +18,7 @@
 
 <script setup lang="ts">
 const viewPassword = ref(false)
+
 const input = ref("123123")
 const id = ref("")
 const bus = useBus()

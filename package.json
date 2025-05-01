@@ -61,15 +61,18 @@
         "changelogen": "^0.6.1",
         "cypress": "^14.3.1",
         "eslint": "^9.24.0",
+        "firebase": "^9.0.0 || ^10.0.0 || ^11.1.0",
         "jsdom": "^26.1.0",
         "nuxt": "^3.17.0",
+        "nuxt-vuefire": "1.0.5",
         "pinia": "^3.0.2",
         "sass": "^1.86.3",
         "sass-embedded": "^1.86.3",
         "typescript": "~5.8.3",
         "unbuild": "^3.5.0",
         "vitest": "^3.1.1",
-        "vue-tsc": "^2.2.8"
+        "vue-tsc": "^2.2.8",
+        "vuefire": ">=3.2.1"
     },
     "packageManager": "pnpm@9.15.3+sha512.1f79bc245a66eb0b07c5d4d83131240774642caaa86ef7d0434ab47c0d16f66b04e21e0c086eb61e62c77efc4d7f7ec071afad3796af64892fae66509173893a"
 }

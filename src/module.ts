@@ -10,7 +10,11 @@ import {
 import fs from "fs"
 import { existsSync } from "node:fs"
 import { resolve } from "node:path"
-import { defineArkformConfig } from "./runtime/controllers/config.controller"
+import config from "../playground/arkform.config"
+import {
+    defineArkformConfig,
+    type ArkformConfigFull,
+} from "./runtime/controllers/config.controller"
 
 // Module options TypeScript interface definition
 export interface ModuleOptions {}
@@ -35,9 +39,20 @@ export default defineNuxtModule<ModuleOptions>({
         _nuxt.options.vite.server.fs.allow.push(resolver.resolve(__dirname, ".."))
 
         // Load arkformConfig
-        const arkformConfig = resolver.resolve(_nuxt.options.rootDir, "arkform.config.ts")
-        const userConfig = require(arkformConfig).default
+        const arkformConfigPath = resolver.resolve(_nuxt.options.rootDir, "arkform.config.ts")
+        const userConfig = await import(arkformConfigPath).then((module) => module.default)
+
         const $arkformConfig = defineArkformConfig(userConfig)
+
+        // Setup firebase
+        if ($arkformConfig.value.firebase?.auth) {
+            await installModule("@nuxt-vuefire")
+
+            // Optional: inject composables
+            _nuxt.hook("imports:dirs", (dirs) => {
+                dirs.push(resolve(__dirname, "runtime/composables")) // /firebase
+            })
+        }
 
         // Setup theme dir
         const themeDir = resolver.resolve(
@@ -47,6 +62,7 @@ export default defineNuxtModule<ModuleOptions>({
 
         if (existsSync(themeDir)) {
             addCssFilesFromDir(themeDir, _nuxt)
+            addCssFilesFromDir
             _nuxt.options.watch.push(themeDir)
             _nuxt.options.alias["#arkform-theme"] = themeDir
         } else {

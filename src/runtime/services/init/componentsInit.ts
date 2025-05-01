@@ -12,30 +12,38 @@ type Z = {
 
 /** This takes the slots passed into a component and handles them. This allows for using custom components as named slots.*/
 export const componentsInit: Func<Z> = (P) => {
-    const { slots, components } = P
-    const slotItems = ref<any[]>([])
+    try {
+        const { slots, components } = P
+        const slotItems = ref<any[]>([])
 
-    const raw = slots?.default?.()
-    if (!Array.isArray(raw)) return
+        const raw = slots?.default?.()
+        if (!Array.isArray(raw)) return
 
-    slotItems.value = raw
+        slotItems.value = raw
 
-    for (const comp of slotItems.value) {
-        const rawProps = comp?.type?.props
-        const rawId = rawProps?.componentId
+        console.log(slotItems.value)
 
-        const name = typeof rawId === "object" ? rawId.default : null
+        for (let comp of slotItems.value) {
+            if (!comp || typeof comp !== "object") continue
+            const rawProps = comp?.type?.props
 
-        if (name && name.includes("ark-")) {
-            const componentName = name.split("ark-")[1]
-
-            if (Object.keys(components.value).includes(componentName)) {
-                console.error(
-                    `Only one of each named <ark> component can be used at once. You have more than one <ark-${componentName} />`,
-                )
+            if (typeof comp?.type === "symbol") {
+                slotItems.value.push(...(comp?.children || []))
+                continue
             }
 
-            components.value[componentName] = comp
+            const rawId = rawProps?.componentId
+
+            const name = typeof rawId === "object" ? rawId.default : null
+
+            if (name && name.includes("ark-")) {
+                const componentName = name.split("ark-")[1]
+                console.log("registering", componentName)
+
+                components.value[componentName] = comp
+            }
         }
+    } catch (e) {
+        console.error(e)
     }
 }

@@ -1,5 +1,6 @@
 import { useArkForm } from "../composables/useArkform"
 import { inputFactory, formFactory, groupFactory } from "../services/factory.service"
+import { arkMessage, type ArkMessage } from "../services/messages.service"
 import { getInputIdByName } from "../services/utils/getInputByName"
 import { getIdsFromId } from "../services/utils/uuid"
 import { useArkFormStore } from "../stores/forms"
@@ -75,13 +76,14 @@ type MountForm = {
         animation: Style["animation"]
         theme: Style["theme"]
         defaults: Record<string, string>
+        name?: string
     }
 
     Return: void
 }
 
 export const mountForm: Func<MountForm> = (P) => {
-    let { formId, animation, defaults, theme } = P
+    let { formId, animation, defaults, name, theme } = P
     const $arkform = useArkForm()
 
     if (!theme) {
@@ -93,7 +95,7 @@ export const mountForm: Func<MountForm> = (P) => {
         throw new Error("Form id not found")
     }
 
-    const form = formFactory({ animation, theme, defaults })
+    const form = formFactory({ animation, theme, defaults, name })
     $forms.state[formId] = form
 }
 
@@ -116,4 +118,19 @@ export const mountGroup: Func<MountGroup> = (P) => {
 
     $forms.state[formId].groups[groupId] = group
     console.log("group mounted:", $forms.state[formId].groups[groupId])
+}
+
+type MountMessages = {
+    Params: {
+        name: string
+    }
+    Return: void
+}
+
+export const mountMessageSet: Func<MountMessages> = (P) => {
+    const { name } = P
+
+    const $forms = useArkFormStore()
+
+    $forms.messages[name] = []
 }

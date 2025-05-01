@@ -1,14 +1,18 @@
 import { arkConfigDefaults, type ArkformConfig } from "../controllers/config.controller"
+import type { ArkMessage, ArkMessageKey } from "../services/messages.service"
+import { getFormIdByName, getInputIdByName } from "../services/utils/getInputByName"
 import { getIdsFromId, uuid } from "../services/utils/uuid"
 import { validateInput } from "../services/validation/validateInput"
 import { useArkFormStore } from "../stores/forms"
 import { useBus } from "./useBus"
 import { ref } from "vue"
 
-type $Arkform = {
+export type $Arkform = {
     useInput: (id: string) => UseArkInput
     useForm: (id: string) => UseArkForm
     useGroup: (id: string) => UseArkGroup
+    useMessageSet: (name: string) => UseArkMessage
+
     clearErrors: (id: string) => void
     reset: (id: string) => void
     clearInputs: (id: string) => void
@@ -21,6 +25,11 @@ type $Arkform = {
         remove: (id: string, index: number) => void
     }
     config: Ref<ArkformConfig>
+
+    message: {
+        set: (name: string, message: ArkMessage) => void
+        clear: (name: string) => void
+    }
 }
 
 export function useArkForm() {
@@ -125,6 +134,7 @@ export function useArkForm() {
             }
 
             const form = $forms.state[formId]
+
             if (!form) {
                 throw new Error(`useGroup(): Form "${formId}" not found for group "${groupId}"`)
             }
@@ -213,11 +223,12 @@ export function useArkForm() {
 
         validate: (id: string): boolean => {
             if (!id) {
-                console.error(`[$arkform.validate] id is invalid (${id})`)
+                console.error(`[$arkform.validate]: id is invalid (${id})`)
                 return false
             }
 
-            const inputIds = getInputIdsFromId(id)
+            const formId = getFormIdByName({ name: id })
+            const inputIds = getInputIdsFromId(formId || id)
 
             let valid = true
 
@@ -264,6 +275,37 @@ export function useArkForm() {
         },
 
         config: ref(arkConfigDefaults),
+
+        message: {
+            set: (name: string, message: ArkMessage) => {
+                const messageGroup = $arkform.useMessageSet(name)
+
+                if (!messageGroup.value) {
+                    console.warn(`[Arkform]: Cannot set <ark-message-group /> with name (${name}).`)
+                }
+
+                messageGroup.value.push(message)
+            },
+
+            clear: (name: string) => {
+                const messageSet = $arkform.useMessageSet(name)
+
+                messageSet.value.splice(0, messageSet.value.length)
+            },
+        },
+
+        useMessageSet(name: string): UseArkMessage {
+            const $forms = useArkFormStore()
+            const messageGroups = $forms.messages
+
+            const messageGroup = messageGroups[name]
+
+            if (!messageGroup) {
+                throw new Error(`[Arkform]: Cannot set <ark-message-group /> with name (${name}).`)
+            }
+
+            return toRef(messageGroup)
+        },
     }
 
     return $arkform

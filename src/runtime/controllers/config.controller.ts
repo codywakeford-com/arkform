@@ -24,11 +24,20 @@ export type ArkformConfigFull = {
     /**Root style dir */
     root: string
 
+    firebase: {
+        auth: boolean
+    }
+
     // Select global theme
     theme: string
 
     animations: {
         [name: string]: VueTransition
+    }
+    validation: {
+        strategies: {
+            [name: string]: (valid: Ref<boolean | null>) => void
+        }
     }
     errors: {
         named: {
@@ -58,11 +67,21 @@ export let arkConfigDefaults: ArkformConfigFull = {
     animations: {
         default: arkDefaultAnimation,
     },
+
+    firebase: {
+        auth: false,
+    },
+
     errors: {
         named: errorSets,
         messages: errorDefaults,
     },
     password: passwordDefaults,
+    validation: {
+        strategies: {
+            shy: (valid) => {},
+        },
+    },
 }
 
 export function defineArkformConfig(userConfig?: ArkformConfig) {
