@@ -16,10 +16,14 @@ export type $Arkform = {
     clearErrors: (id: string) => void
     reset: (id: string) => void
     clearInputs: (id: string) => void
-    validate: (id: string) => boolean
+    validate: <T>(id: string) => T | null
+
     form: {
         submit: (id: string) => void
+        toggleReadonly: (id: string) => void
+        set: (id: string, data: Record<string, any>) => void
     }
+
     group: {
         add: (id: string, clearInputs: boolean) => void
         remove: (id: string, index: number) => void
@@ -30,6 +34,8 @@ export type $Arkform = {
         set: (name: string, message: ArkMessage) => void
         clear: (name: string) => void
     }
+
+    state: ComputedRef<ArkForms>
 }
 
 export function useArkForm() {
@@ -86,17 +92,17 @@ export function useArkForm() {
                 return Object.values(inputs).flatMap((input: any) => input.errors)
             })
 
-            const value = computed(() => {
-                const result: Record<string, any> = {}
+            // const value = computed(() => {
+            //     const result: Record<string, any> = {}
 
-                Object.values(inputs).forEach((input: any) => {
-                    const val = input.value ? input.value : null
+            //     Object.values(inputs).forEach((input: any) => {
+            //         const val = input.value ? input.value : null
 
-                    result[input.name] = val
-                })
+            //         result[input.name] = val
+            //     })
 
-                return result
-            })
+            //     return result
+            // })
 
             const valid = computed(() => {
                 if (Object.values(inputs).every((input) => !input.checked)) {
@@ -106,16 +112,31 @@ export function useArkForm() {
                 return Object.values(inputs).every((input) => input.valid)
             })
 
+            const makeValueRefs = () => {
+                const refs: { [name: string]: Ref } = {}
+
+                Object.entries(inputs).forEach(([inputId, input]) => {
+                    let inputRef: { [name: string]: Ref } = {}
+                    inputRef[input.name.value] = toRef(input.value)
+
+                    refs[input.name] = input.value
+                })
+
+                return reactive(refs)
+            }
+
+            const value = makeValueRefs()
+
             const validated = computed(() => {
-                return valid.value ? value.value : null
+                return valid.value ? value : null
             })
 
-            const out = {
+            const out: UseArkForm = {
                 ...toRefs($forms.state[formId]),
                 names,
                 errors,
-                value,
                 validated,
+                value,
                 valid,
             }
 
@@ -221,10 +242,10 @@ export function useArkForm() {
             $arkform.clearInputs(id)
         },
 
-        validate: (id: string): boolean => {
+        validate<T>(id: string): T | null {
             if (!id) {
                 console.error(`[$arkform.validate]: id is invalid (${id})`)
-                return false
+                return null
             }
 
             const formId = getFormIdByName({ name: id })
@@ -238,7 +259,11 @@ export function useArkForm() {
                 }
             })
 
-            return valid
+            if (valid) {
+                return $arkform.useForm(formId).validated.value as T
+            } else {
+                return null
+            }
         },
 
         form: {
@@ -247,6 +272,27 @@ export function useArkForm() {
 
                 const bus = useBus()
                 bus.emit(`form-${id}:submit`)
+            },
+
+            toggleReadonly: (id: string | undefined) => {
+                if (!id) return
+                const form = $arkform.useForm(id)
+                form.readOnly.value = !form.readOnly.value
+                console.log(form.readOnly.value)
+            },
+
+            set: (id: string, data: Record<string, any>) => {
+                console.log("hello from $arkform.form.set")
+                const inputIds = getInputIdsFromId(id)
+
+                inputIds.forEach((id) => {
+                    const input = $arkform.useInput(id)
+
+                    if (input.name.value in data) {
+                        console.log(data[input.name.value])
+                        input.value.value = data[input.name.value]
+                    }
+                })
             },
         },
 
@@ -281,7 +327,9 @@ export function useArkForm() {
                 const messageGroup = $arkform.useMessageSet(name)
 
                 if (!messageGroup.value) {
-                    console.warn(`[Arkform]: Cannot set <ark-message-group /> with name (${name}).`)
+                    console.warn(
+                        `[arkform]: Cannot set value undefined <ark-message-group /> with name (${name}).`,
+                    )
                 }
 
                 messageGroup.value.push(message)
@@ -289,7 +337,6 @@ export function useArkForm() {
 
             clear: (name: string) => {
                 const messageSet = $arkform.useMessageSet(name)
-
                 messageSet.value.splice(0, messageSet.value.length)
             },
         },
@@ -305,6 +352,11 @@ export function useArkForm() {
             }
 
             return toRef(messageGroup)
+        },
+
+        state: () => {
+            const $forms = useArkFormStore()
+            return $forms.state
         },
     }
 

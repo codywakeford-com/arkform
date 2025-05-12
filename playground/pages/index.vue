@@ -8,6 +8,7 @@
             v-model:errors="errors"
             v-model:valid="valid"
             v-model:id="id"
+            name="hello"
         >
             <div class="inline">
                 <ark-input name="firstName"></ark-input>

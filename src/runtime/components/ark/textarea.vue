@@ -1,12 +1,7 @@
 <template>
-    <ark-input
-        class="ark-textarea"
-        name="textarea"
-        :resize="false"
-        type="text"
-        :textarea="true"
-        rows="10"
-    />
+    <ark-input v-bind="$attrs" class="ark-textarea" as="textarea" :resize="false" type="text">
+        <slot />
+    </ark-input>
 </template>
 
 <script setup lang="ts"></script>

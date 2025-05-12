@@ -5,6 +5,7 @@
         @submit.prevent
         class="ark-form"
         :class="{
+            'read-only': !!readonlyRef.value,
             [`arkform-animation-${animation}`]: !!animationVal,
             [`${themeVal}`]: !!themeVal,
         }"
@@ -23,19 +24,10 @@ import { useArkForm } from "../../composables/useArkform"
 import { mountForm } from "../../controllers/mount.controller"
 import { useFormModelSync } from "../../composables/useModelSync"
 import { useFormId } from "../../composables/initId"
-import { type } from "arktype"
 
 const $arkform = useArkForm()
 const bus = useBus()
 const $arkconfig = $arkform.config
-
-type Expand<T> = T extends object ? { [K in keyof T]: T[K] } : T
-
-type Validated<T extends Record<string, any>> = T extends object
-    ? { [K in keyof T]: string }
-    : never
-
-type ResolvedValidated<T extends Record<string, any>> = Expand<Validated<T>> | null
 
 const modelVal = defineModel<T>({ default: {} as T })
 const errorsModel = defineModel<string[]>("errors", { default: null })
@@ -43,20 +35,25 @@ const idModel = defineModel<string>("id", { default: "" })
 const namesModel = defineModel<string[]>("names", { default: null })
 const stateModel = defineModel<ArkForm>("state", { default: null })
 const validModel = defineModel<boolean | null>("valid", { default: null })
-const validatedModel = defineModel<ResolvedValidated<T>>("validated", { default: null })
+const validatedModel = defineModel<any>("validated", { default: null })
 const performanceModel = defineModel<number>("performance", { default: null })
-const isSubmitting = ref(false)
+
+const emit = defineEmits(["change"])
 
 const formId = useFormId({
     idModel,
 })
 
 const formRef = computed(() => $arkform.useForm(formId.value))
+const readonlyRef = computed(() => {
+    return $arkform.useForm(formId.value).readOnly
+})
 
 const {
     componentId = "ark-form",
     submit = null,
     reset = true,
+    readonly = false,
     valid = null,
     validated = null,
     state = {},
@@ -66,35 +63,29 @@ const {
     modelValue = {},
     theme = null,
     animation = null,
-    defaults = {},
+    defaults = null,
     auth = null,
+    persist = false,
 } = defineProps<{
     componentId?: "ark-form"
+    name: string
     submit?: Function | null
     validation?: ValidationType
+    persist?: boolean
     reset?: boolean
     id?: string
-    name?: string | null
     modelValue?: T
     state?: any
-    defaults?: Record<string, string>
+    defaults?: any
     errors?: string[]
     names?: string[]
     valid?: boolean | null
     animation?: string | null
-    validated?: ResolvedValidated<T>
+    validated?: any
     theme?: string | null
     auth?: "signin" | null
+    readonly?: boolean
 }>()
-
-const ModelTypeDef = type({
-    firstName: "string | null",
-    lastName: "string | null",
-    email: "string | null",
-    password: "string | null",
-})
-
-type ModelType = typeof ModelTypeDef.infer
 
 // Get active style
 const themeVal = computed(() => {
@@ -104,10 +95,11 @@ const animationVal = computed(() => {
     return animation ? animation : null
 })
 
-mountForm({ formId: formId.value, animation, theme, defaults, name: name || "" })
+mountForm({ formId: formId.value, animation, theme, defaults, name, persist, readOnly: readonly })
 
 useFormModelSync({
     formRef,
+    formId: formId.value,
     models: {
         stateModel,
         validModel,
@@ -117,8 +109,6 @@ useFormModelSync({
         errorsModel,
     },
 })
-
-// provide("form-id", formId)
 provide("form-name", name)
 
 onMounted(() => {
@@ -147,6 +137,11 @@ onMounted(() => {
         performanceModel.value = perf
     }
 
+    const onChange = (input: any) => {
+        emit("change", formRef)
+    }
+
+    bus.on(`${formId}:change`, onChange)
     bus.on(`${formId}:submit`, onSubmit)
     bus.on(`${formId}:input`, onInput)
 

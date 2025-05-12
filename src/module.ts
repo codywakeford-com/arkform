@@ -1,20 +1,9 @@
-import {
-    defineNuxtModule,
-    addPlugin,
-    createResolver,
-    addComponentsDir,
-    installModule,
-    addImportsDir,
-    addImports,
-} from "@nuxt/kit"
+import { defineNuxtModule, addPlugin, createResolver, addComponentsDir, installModule, addImportsDir, addImports } from "@nuxt/kit"
 import fs from "fs"
 import { existsSync } from "node:fs"
 import { resolve } from "node:path"
 import config from "../playground/arkform.config"
-import {
-    defineArkformConfig,
-    type ArkformConfigFull,
-} from "./runtime/controllers/config.controller"
+import { defineArkformConfig, type ArkformConfigFull } from "./runtime/controllers/config.controller"
 
 // Module options TypeScript interface definition
 export interface ModuleOptions {}
@@ -45,20 +34,25 @@ export default defineNuxtModule<ModuleOptions>({
         const $arkformConfig = defineArkformConfig(userConfig)
 
         // Setup firebase
-        if ($arkformConfig.value.firebase?.auth) {
-            await installModule("@nuxt-vuefire")
+        if ($arkformConfig.value.arkfire?.enabled) {
+            // await installModule("@nuxt-vuefire")
 
             // Optional: inject composables
             _nuxt.hook("imports:dirs", (dirs) => {
-                dirs.push(resolve(__dirname, "runtime/composables")) // /firebase
+                dirs.push(resolve(__dirname, "runtime/services/arkfire")) // /firebase
             })
+
+            addPlugin({
+                src: resolver.resolve("./runtime/plugins/firebase"),
+                mode: "all",
+                order: -100, // lower runs earlier
+            })
+
+            console.log("installing firebase")
         }
 
         // Setup theme dir
-        const themeDir = resolver.resolve(
-            _nuxt.options.rootDir,
-            $arkformConfig?.value?.root || "./arkform",
-        )
+        const themeDir = resolver.resolve(_nuxt.options.rootDir, $arkformConfig?.value?.root || "./arkform")
 
         if (existsSync(themeDir)) {
             addCssFilesFromDir(themeDir, _nuxt)
@@ -80,7 +74,11 @@ export default defineNuxtModule<ModuleOptions>({
         })
 
         addImportsDir(resolver.resolve(__dirname, "runtime/composables"))
+        addImportsDir(resolver.resolve("runtime/types"))
+        addImportsDir(resolver.resolve(__dirname, "runtime/stores"))
         addImportsDir(resolver.resolve("runtime/controllers"))
+
+        console.log("\x1b[38;2;255;85;0m🔥 [arkform] Installed\x1b[0m")
     },
 })
 
@@ -91,7 +89,7 @@ function addCssFilesFromDir(directory: string, _nuxt: any) {
         const filePath = resolve(directory, file)
         const stat = fs.statSync(filePath)
 
-        console.log("resolving", filePath)
+        // console.log("resolving", filePath)
 
         if (stat.isDirectory()) {
             addCssFilesFromDir(filePath, _nuxt)

@@ -1,5 +1,29 @@
-export const messages = {
+const messages = {
+    "auth/invalid-email": "Invalid email or password.",
+    "auth/invalid-credential": "Invalid email or password.",
+    "auth/user-disabled": "Unauthorized. Please log in to continue.",
+    "auth/user-not-found": "Invalid email or password.",
+    "auth/wrong-password": "Invalid email or password.",
+    "auth/email-already-in-use": "An account with this email address already exists.",
+    "auth/weak-password": "Invalid email or password.",
+    "auth/operation-not-allowed": "You don’t have permission to access this resource.",
+    "auth/too-many-requests": "Too many requests. Please slow down.",
+    "auth/invalid-verification-code": "Invalid email or password.",
+    "auth/invalid-verification-id": "Invalid email or password.",
+    "auth/missing-android-pkg-name": "Internal server error. Please try again later.",
+    "auth/missing-continue-uri": "Internal server error. Please try again later.",
+    "auth/missing-ios-bundle-id": "Internal server error. Please try again later.",
+    "auth/account-exists-with-different-credential": "Invalid email or password.",
+    "auth/credential-already-in-use": "Invalid email or password.",
+    "auth/provider-already-linked": "Your profile was updated successfully.",
+    "auth/cancelled-popup-request": "An unknown error has occurred.",
+    "auth/popup-closed-by-user": "An unknown error has occurred.",
+    "auth/redirect-cancelled-by-user": "An unknown error has occurred.",
+    "auth/unsupported-persistent-storage": "Internal server error. Please try again later.",
+    "invalid-argument": "Internal server error, please try again",
+
     unauthorized: "Unauthorized. Please log in to continue.",
+    login: "Logged in successfully.",
     "invalid-email-password": "Invalid email or password.",
     forbidden: "You don’t have permission to access this resource.",
     "not-found": "The requested resource does not exist.",
@@ -17,6 +41,7 @@ export const messages = {
     "order-placed": "Your order was placed successfully.",
     "file-uploaded": "File uploaded successfully.",
     "payment-success": "Payment processed successfully.",
+    "invalid-fields": "Not all fields are valid",
     "account-created": "Account created successfully.",
     null: "",
 } as const
@@ -27,7 +52,6 @@ export type ArkMessageKey = keyof MessageMap
 
 type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never
 
-// --- Main Inference Magic ---
 type SplitMessageInput<T extends string> = T extends `${infer Type}.${infer Msg}`
     ? Type extends ArkMessageType
         ? Msg extends ArkMessageKey
@@ -48,7 +72,11 @@ export function arkMessage<T extends `${ArkMessageType}.${ArkMessageKey}`>(code:
     const [type, key] = code.split(".") as [ArkMessageType, ArkMessageKey]
 
     if (!messages[key]) {
-        console.warn(`[Arkform]: Message "${key}" is not defined.`)
+        console.warn(`[arkform.arkMessage()]: Message "${key}" is not defined.`)
+        return {
+            type: "error",
+            message: messages["unknown"],
+        } as ArkMessage<T>
     }
 
     return {
@@ -56,9 +84,7 @@ export function arkMessage<T extends `${ArkMessageType}.${ArkMessageKey}`>(code:
         message: messages[key],
     } as ArkMessage<T>
 }
-const msg = arkMessage("success.ok")
 
-///////////
-//
-//
-//
+const msg = arkMessage("success.ok")
+const msg2 = arkMessage("warning.forbidden")
+const msg3 = arkMessage("error.unknown")

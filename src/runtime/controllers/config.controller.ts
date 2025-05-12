@@ -6,6 +6,7 @@ import { useArkForm } from "../composables/useArkform"
 import { arkDefaultAnimation } from "../style/animations/default"
 import { type } from "arktype"
 import { errorSets } from "../composables/config/errorSets"
+import type { ArkFirestore, DefineFirestore, defineFirestoreSchema } from "../composables/firestore"
 
 export interface VueTransitions {
     [name: string]: VueTransition
@@ -18,14 +19,49 @@ export interface VueTransition {
     leave: (el: Element, done: () => void) => void
 }
 
-export type ArkformConfig = Partial<ArkformConfigFull>
+export type ArkformConfig<Schema extends FirestoreSchemaBase> = Partial<ArkformConfigFull<Schema>>
 
-export type ArkformConfigFull = {
+export type FirebaseConfig = {
+    apiKey: string
+    authDomain: string
+    projectId: string
+    storageBucket: string
+    messagingSenderId: string
+    appId: string
+    measurementId?: string
+}
+
+export type CustomSchema = {
+    users: {
+        $doc: {
+            id: string
+        }
+
+        $collections: {
+            emails: {
+                $doc: {
+                    email: string
+                }
+            }
+        }
+    }
+}
+
+export type ArkformConfigFull<Schema extends FirestoreSchemaBase> = {
     /**Root style dir */
     root: string
 
-    firebase: {
-        auth: boolean
+    arkfire: {
+        enabled: boolean
+        firebaseConfig: FirebaseConfig | null
+        firestore: ReturnType<typeof defineFirestoreSchema<Schema>>
+
+        ports: {
+            auth: number
+            firestore: number
+            hosting: number
+            storage: number
+        }
     }
 
     // Select global theme
@@ -61,15 +97,24 @@ export const typesConfig = {
     }),
 } as const
 
-export let arkConfigDefaults: ArkformConfigFull = {
+export let arkConfigDefaults: ArkformConfigFull<{}> = {
     root: "arkform",
     theme: "default",
     animations: {
         default: arkDefaultAnimation,
     },
 
-    firebase: {
-        auth: false,
+    arkfire: {
+        enabled: true,
+        firebaseConfig: null,
+        firestore: {},
+
+        ports: {
+            auth: 9099,
+            firestore: 8080,
+            hosting: 5000,
+            storage: 9199,
+        },
     },
 
     errors: {
@@ -92,7 +137,7 @@ export function defineArkformConfig(userConfig?: ArkformConfig) {
     const arkFormStore = useArkForm()
     Object.assign(arkFormStore.config.value, mergedConfig)
 
-    console.log("[Arkform]: Final merged config", useArkForm().config.value)
+    //console.log("[Arkform]: Final merged config", useArkForm().config.value)
 
     return useArkForm().config
 }

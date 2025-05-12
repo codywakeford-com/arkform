@@ -29,6 +29,8 @@ const model = ref()
 const id = ref()
 const form = ref()
 const errors = ref()
+const $arkform = useArkForm()
+const firestore = $arkform.config.value.arkfire?.schema
 </script>
 
 <style scoped lang="scss"></style>

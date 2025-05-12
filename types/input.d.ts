@@ -1,10 +1,13 @@
-import type { ArkMessage } from "~/src/runtime/services/messages.service"
+import { type Reactive, type Ref, type ComputedRef } from "vue"
+
 type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never
 type ExpandUnion<T> = T extends any ? T : never
 
 export {}
 
 declare global {
+    type ArandomType = string
+
     type Style = {
         animation: string | null
         theme: string | null
@@ -45,9 +48,13 @@ declare global {
         name: string | null
         groups: InputGroups
         inputs: Inputs
+        value: {
+            [fieldName: string]: Ref<any>
+        }
         validation: ValidationType
         style: Style
         loading: boolean
+        readOnly: boolean
     }>
 
     type ArkGroup = Expand<
@@ -151,6 +158,13 @@ declare global {
 
         style: Ref<Style>
 
+        /** Toogle input or viewing mode */
+        readOnly: Ref<boolean>
+
+        value: Ref<{
+            [fieldName: string]: anu
+        }>
+
         /**
         Validation strategy for the form. Dictactes
         when a validation will fire. This can be overridden
@@ -172,11 +186,6 @@ declare global {
 
         /** Shows the modelValue ONLY if the input is valid. */
         validated: ComputedRef<null | any>
-
-        /**A clean version of the descendent inputs. */
-        value: ComputedRef<{
-            [key: string]: string
-        }>
 
         /**Form loading state*/
         loading: Ref<boolean>

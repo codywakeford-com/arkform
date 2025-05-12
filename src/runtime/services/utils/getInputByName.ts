@@ -5,6 +5,8 @@ import { getIdsFromId } from "./uuid"
 interface GetInputIdByName {
     Params: {
         name: string
+
+        // any id / parent/ sibling
         id: string
     }
 
@@ -23,7 +25,7 @@ export const getInputIdByName: Func<GetInputIdByName> = (P) => {
     })
 
     if (!found) {
-        throw new Error(`[Arkform]: Input with name (${name}) does exist in form.`)
+        throw new Error(`[arkform]: Input with name (${name}) does exist in form.`)
     }
 
     return found.id

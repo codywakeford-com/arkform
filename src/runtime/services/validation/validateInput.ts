@@ -19,7 +19,7 @@ export const validateInput: Func<Z> = (P) => {
     const input = $arkform.useInput(id)
     let errors: string[] = []
 
-    if (!input.arkValidators.value?.length) {
+    if (!input.optional.value && !input.arkValidators.value?.length) {
         input.arkValidators.value?.push("string>0")
     }
 

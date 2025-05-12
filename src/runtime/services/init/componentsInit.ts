@@ -21,8 +21,6 @@ export const componentsInit: Func<Z> = (P) => {
 
         slotItems.value = raw
 
-        console.log(slotItems.value)
-
         for (let comp of slotItems.value) {
             if (!comp || typeof comp !== "object") continue
             const rawProps = comp?.type?.props
@@ -38,7 +36,6 @@ export const componentsInit: Func<Z> = (P) => {
 
             if (name && name.includes("ark-")) {
                 const componentName = name.split("ark-")[1]
-                console.log("registering", componentName)
 
                 components.value[componentName] = comp
             }

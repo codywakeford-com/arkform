@@ -1,8 +1,12 @@
+import { useBus } from "./useBus"
+
 // Keep exposed v-models in sync with pinia //
+//
 
 interface UseFormModelSync {
     Params: {
         formRef: Ref<UseArkForm>
+        formId: string
         models: {
             stateModel: Ref<any>
             validModel: Ref<boolean | null>
@@ -19,7 +23,9 @@ export const useFormModelSync: Func<UseFormModelSync> = async (P) => {
     try {
         const { stateModel, validModel, modelVal, validatedModel, errorsModel, namesModel } =
             P.models
-        const { formRef } = P
+        const { formRef, formId } = P
+
+        const bus = useBus()
 
         watch(
             formRef,
@@ -38,6 +44,8 @@ export const useFormModelSync: Func<UseFormModelSync> = async (P) => {
                 } else {
                     validatedModel.value = null
                 }
+
+                bus.emit(`${formId}:change`)
             },
             { immediate: true, deep: true },
         )

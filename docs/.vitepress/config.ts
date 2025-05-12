@@ -38,6 +38,11 @@ export default defineConfig({
                 ],
             },
             {
+                text: "Arkfire",
+                link: "/arkfire",
+                items: [{ text: "Introduction", link: "/arkfire" }],
+            },
+            {
                 text: "Components",
 
                 items: [

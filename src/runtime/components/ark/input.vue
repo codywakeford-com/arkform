@@ -1,25 +1,36 @@
 <template>
     <div :class="{ errors: showErrors }" class="ark-input-wrapper">
         <div class="ark-label-container">
-            <label v-if="components.label" class="ark-label">
+            <label v-if="components.label && label" class="ark-label">
                 <component :is="components.label" />
             </label>
 
-            <label v-else class="ark-label" :class="{ error: showErrors }" :for="name">
-                {{ name }}:
+            <label
+                v-else-if="label"
+                class="ark-label"
+                :class="{ error: showErrors }"
+                :for="$attrs.name as string"
+            >
+                {{ $attrs.name }}:
             </label>
         </div>
 
         <div class="ark-input-container" :class="{ error: showErrors }">
-            <component :is="components.fore" />
+            <component v-if="components.fore" :is="components.fore" />
             <input
-                :data-ark-input="name"
+                v-if="isType('input')"
+                :readonly="readOnly.value"
+                :data-ark-input="$attrs.name"
                 class="ark-input"
-                :name="name"
-                @input="onInput()"
                 v-model="inputRef.value.value"
                 v-bind="$attrs"
             />
+            <textarea v-if="isType('textarea')" v-bind="$attrs" v-model="inputRef.value.value" />
+
+            <select v-if="isType('select')" v-bind="$attrs" v-model="inputRef.value.value">
+                <slot />
+            </select>
+
             <component v-if="components.aft" :is="components.aft" />
         </div>
 
@@ -38,7 +49,7 @@
                 class="ark-errors"
                 name="arkform"
                 tag="ul"
-                :data-ark-errors="name"
+                :data-ark-errors="$attrs.name"
                 @before-enter="$animation?.beforeEnter"
                 @enter="$animation?.enter"
                 @before-leave="$animation?.beforeLeave"
@@ -70,20 +81,22 @@ import { useInputModelSync } from "../../composables/useModelSync"
 const $arkform = useArkForm()
 const groupId = inject<Ref<string | null>>("group-id", ref(null))
 const formId = inject<Ref<string>>("form-id")
+const attrs = useAttrs()
 
 if (!formId) {
     throw new Error("[Arkform] Missing <form-id> injection")
 }
 
-const inputType = type("string")
-type ModelType = typeof inputType.infer
-
+const modelValue = defineModel<T | null>()
 const validModel = defineModel<boolean | null>("valid")
-const modelValue = defineModel<ModelType | null>()
-const validatedModel = defineModel<ModelType | null>("validated", { default: null })
+const validatedModel = defineModel<T | null>("validated", { default: null })
 const errorsModel = defineModel<string[]>("errors", { default: [] })
 const idModel = defineModel<string>("id", { default: null })
 const stateModel = defineModel<UseArkInput>("state", { default: null })
+
+const readOnly = computed(() => {
+    return $arkform.useForm(formId.value).readOnly
+})
 
 const inputId = useInputId({
     idModel,
@@ -106,40 +119,48 @@ const components = ref({
     fore: null,
     link: null,
 })
-interface Props {
-    name: string
 
+interface Props {
+    as?: "input" | "textarea" | "select"
+    value?: null | any
     componentId?: "ark-input"
-    ark?: ArkValidators
-    modelValue?: ModelType | null
+    ark?: string | string[]
+    modelValue?: T | null
     matches?: string
     preset?: string | null
+    edit?: boolean
     textarea?: boolean
+    theme?: Style["theme"]
     optional?: boolean
     animation?: string
     checkbox?: boolean
-    validated?: null | ModelType
+    validated?: T | null
     valid?: null | boolean
     errors?: string[]
+    label?: boolean
 }
+const props = defineProps<Props>()
 
 const {
     componentId = "ark-input",
+    as = "input",
+    edit = true,
     matches,
-    name,
+    value = null,
     preset = null,
-    textarea = false,
     checkbox = false,
     optional = false,
     animation = "default",
-
+    theme = "default",
     errors = [],
     ark = [],
-} = defineProps<Props>()
+    label = true,
+} = props
 
 const $animation = $arkform.config?.value?.animations?.[animation]
 
 function onInput() {
+    console.log("Hello?")
     bus.emit(`${formId}:input`)
     bus.emit(`${inputId}:input`)
 
@@ -151,12 +172,14 @@ function onInput() {
 componentsInit({ slots: useSlots(), components })
 
 mountInput({
-    preset,
     id: inputId.value,
     arkValidators: ark,
     matches,
-    inputName: name,
+    inputName: attrs.name as string,
+    preset,
     optional,
+    animation: animation,
+    theme: theme,
 })
 
 const inputRef = computed(() => $arkform.useInput(inputId.value))
@@ -172,9 +195,17 @@ useInputModelSync({
     },
 })
 
+watch(inputRef.value.value, (val) => {
+    console.log(val)
+    onInput()
+})
 const showErrors = computed(() => {
     return !!$arkform.useInput(inputId.value).errors.value.length
 })
+
+function isType(type: string): boolean {
+    return as === type
+}
 </script>
 
 <style scoped lang="scss"></style>

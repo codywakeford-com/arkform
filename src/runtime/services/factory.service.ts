@@ -1,28 +1,28 @@
-import type { Reactive } from "vue"
 import { formatArkValidators } from "./utils/formatArkValidators"
-import type { ArkMessage } from "./messages.service"
 
 type FormFactory = {
     Params: {
         animation: Style["animation"]
         theme: Style["theme"]
         validation?: ValidationType
-        defaults: Record<string, string>
+        defaults: Record<string, string> | null
         name?: string
+        readOnly?: boolean
     } | void
 
     Return: ArkForm
 }
 
 export const formFactory: Func<FormFactory> = (P) => {
-    const { validation, name, defaults, animation, theme } = P || {}
+    const { validation, readOnly, name, defaults, animation, theme } = P || {}
 
     const form = {
         name: name || null,
         groups: {},
         inputs: {},
-        defaults: defaults || {},
+        defaults: defaults ? defaults : {},
         loading: false,
+        readOnly: readOnly,
 
         validation: validation || "shy",
         style: {
