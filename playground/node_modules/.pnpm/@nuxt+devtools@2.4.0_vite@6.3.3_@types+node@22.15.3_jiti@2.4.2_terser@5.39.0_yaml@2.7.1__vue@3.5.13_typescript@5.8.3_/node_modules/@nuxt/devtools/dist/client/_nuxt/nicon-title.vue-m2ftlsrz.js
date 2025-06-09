@@ -1,0 +1,1 @@
+import{p as o,P as s,a1 as a,R as t,U as n,X as r,Q as l,a8 as i}from"./vendor/json-editor-vue-exjsfanq.js";const c={flex:"~ gap-3","items-center":""},u=o({__name:"NIconTitle",props:{icon:{},text:{}},setup(p){return(e,m)=>(a(),s("div",c,[e.icon?(a(),s("div",{key:0,class:r(e.icon)},null,2)):t("",!0),n(e.$slots,"default",{},()=>[l("div",null,i(e.text),1)])]))}});export{u as _};

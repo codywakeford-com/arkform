@@ -21,8 +21,7 @@ export const uuid: Func<Z> = (P) => {
     let { id, add } = P || {}
 
     const chars = "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    const randomCode = () =>
-        Array.from({ length: 8 }, () => chars[Math.floor(Math.random() * chars.length)]).join("")
+    const randomCode = () => Array.from({ length: 8 }, () => chars[Math.floor(Math.random() * chars.length)]).join("")
 
     if (!id) {
         return `form:${randomCode()}`

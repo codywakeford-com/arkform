@@ -1,13 +1,12 @@
 {
     "name": "arkform",
     "version": "1.0.0",
-    "description": "form framework",
-    "repository": "your-org/my-module",
-    "license": "MIT",
     "type": "module",
     "exports": {
-        "./runtime/*": "./src/runtime/*",
-        ".": "./src/module.ts"
+        ".": {
+            "types": "./dist/types.d.mts",
+            "import": "./dist/module.mjs"
+        }
     },
     "main": "./dist/module.mjs",
     "typesVersions": {
@@ -18,14 +17,14 @@
         }
     },
     "files": [
-        "dist",
-        "runtime"
+        "dist"
     ],
+    "types": "dist/module.d.ts",
     "scripts": {
         "build": "nuxt-module-build build",
         "dev": "nuxi dev playground",
         "dev:build": "nuxi build playground",
-        "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",
+        "prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",
         "release": "npm run lint && npm run test && npm run prepack && changelogen --release && npm publish && git push --follow-tags",
         "lint": "eslint .",
         "test": "vitest run",
@@ -36,43 +35,26 @@
         "docs:preview": "vitepress preview docs"
     },
     "dependencies": {
-        "@nuxt/icon": "^1.12.0",
-        "@nuxt/kit": "^3.16.2",
-        "@vitejs/plugin-vue": "^5.2.3",
-        "@vue/test-utils": "^2.4.6",
-        "@vueuse/core": "^13.1.0",
-        "arktype": "^2.1.19",
-        "chance": "^1.1.12",
-        "happy-dom": "^17.4.4",
-        "lodash-es": "^4.17.21",
-        "mitt": "^3.0.1",
-        "shiki": "^3.2.2",
-        "vitepress": "^1.6.3"
+        "arktype": "^2.1.17",
+        "firebase": "^11.9.0",
+        "@nuxt/kit": "^3.17.5"
     },
+    "peerDependencies": {},
+    "packageManager": "pnpm@9.15.3+sha512.1f79bc245a66eb0b07c5d4d83131240774642caaa86ef7d0434ab47c0d16f66b04e21e0c086eb61e62c77efc4d7f7ec071afad3796af64892fae66509173893a",
     "devDependencies": {
-        "@nuxt/devtools": "^2.3.2",
-        "@nuxt/eslint-config": "^1.3.0",
+        "@nuxt/kit": "^3.17.5",
+        "nitro": "^0.0.0",
+        "@nuxt/devtools": "^2.5.0",
+        "@nuxt/eslint-config": "^1.4.1",
         "@nuxt/module-builder": "^1.0.1",
-        "@nuxt/schema": "^3.16.2",
-        "@nuxt/test-utils": "^3.17.2",
-        "@pinia/nuxt": "0.11.0",
+        "@nuxt/schema": "^3.17.5",
+        "@nuxt/test-utils": "^3.19.1",
         "@types/node": "latest",
-        "@vitest/ui": "^3.1.2",
         "changelogen": "^0.6.1",
-        "cypress": "^14.3.1",
-        "eslint": "^9.24.0",
-        "firebase": "^9.0.0 || ^10.0.0 || ^11.1.0",
-        "jsdom": "^26.1.0",
-        "nuxt": "^3.17.0",
-        "nuxt-vuefire": "1.0.5",
-        "pinia": "^3.0.2",
-        "sass": "^1.86.3",
-        "sass-embedded": "^1.86.3",
+        "eslint": "^9.28.0",
+        "nuxt": "^3.17.5",
         "typescript": "~5.8.3",
-        "unbuild": "^3.5.0",
-        "vitest": "^3.1.1",
-        "vue-tsc": "^2.2.8",
-        "vuefire": ">=3.2.1"
-    },
-    "packageManager": "pnpm@9.15.3+sha512.1f79bc245a66eb0b07c5d4d83131240774642caaa86ef7d0434ab47c0d16f66b04e21e0c086eb61e62c77efc4d7f7ec071afad3796af64892fae66509173893a"
+        "vitest": "^3.2.2",
+        "vue-tsc": "^2.2.10"
+    }
 }

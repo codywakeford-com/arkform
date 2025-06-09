@@ -1,0 +1,9 @@
+{
+  "_hash": "Bks99FdP4VoCoxWXsTWbJ1traIZBHPeFGeis5TXK8AY",
+  "project": {
+    "rootDir": "/home/cody/git/monorepo/libs/arkform/playground"
+  },
+  "versions": {
+    "nuxt": "3.17.4"
+  }
+}

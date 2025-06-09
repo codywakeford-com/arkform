@@ -1,5 +1,4 @@
 import { useArkForm } from "../../composables/useArkform"
-import { useArkFormStore } from "../../stores/forms"
 import { getIdsFromId } from "./uuid"
 
 interface GetInputIdByName {

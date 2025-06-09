@@ -1,0 +1,36 @@
+{
+    "functions": {
+        "source": ".output/server",
+        "runtime": "nodejs20"
+    },
+    "hosting": {
+        "site": "jdl-designs",
+        "public": ".output/public",
+        "rewrites": [
+            {
+                "source": "**",
+                "function": "server"
+            }
+        ],
+        "cleanUrls": true,
+        "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
+    },
+
+    "projects": {
+        "default": "jdl-designs"
+    },
+    "emulators": {
+        "auth": {},
+        "firestore": {},
+        "storage": {},
+        "ui": {
+            "enabled": true
+        },
+        "singleProjectMode": true
+    },
+    "firestore": {
+        "rules": "firestore.rules",
+        "indexes": "firestore.indexes.json"
+    },
+    "extensions": {}
+}

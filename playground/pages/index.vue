@@ -1,15 +1,7 @@
 <template>
     <div class="flex">
         <!-- @vue-generic {typeof modelType.infer} -->
-        <ark-form
-            v-model="form"
-            v-model:performance="perf"
-            v-model:validated="validated"
-            v-model:errors="errors"
-            v-model:valid="valid"
-            v-model:id="id"
-            name="hello"
-        >
+        <ark-form v-model="form" v-model:performance="perf" v-model:validated="validated" v-model:errors="errors" v-model:valid="valid" v-model:id="id" name="hello">
             <div class="inline">
                 <ark-input name="firstName"></ark-input>
                 <ark-input name="lastName"></ark-input>
@@ -31,6 +23,7 @@
                 <pre>v-model = {{ form }}</pre>
                 <!-- <pre>v-model:errors = {{ errors }}</pre> -->
                 <pre>v-model:validated = {{ validated === null ? "null" : validated }}</pre>
+                <pre>{{ $user || "no user" }}</pre>
             </div>
         </client-only>
     </div>

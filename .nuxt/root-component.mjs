@@ -1,0 +1,1 @@
+export { default } from "/home/cody/git/monorepo/node_modules/nuxt/dist/app/components/nuxt-root.vue";

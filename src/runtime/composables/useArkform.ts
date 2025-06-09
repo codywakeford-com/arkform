@@ -1,7 +1,6 @@
 import { arkConfigDefaults, type ArkformConfig } from "../controllers/config.controller"
-import type { ArkMessage, ArkMessageKey } from "../services/messages.service"
-import { getFormIdByName, getInputIdByName } from "../services/utils/getInputByName"
-import { getIdsFromId, uuid } from "../services/utils/uuid"
+import { getFormIdByName } from "../services/utils/getInputByName"
+import { getIdsFromId } from "../services/utils/uuid"
 import { validateInput } from "../services/validation/validateInput"
 import { useArkFormStore } from "../stores/forms"
 import { useBus } from "./useBus"
@@ -20,7 +19,15 @@ export type $Arkform = {
 
     form: {
         submit: (id: string) => void
-        toggleReadonly: (id: string) => void
+        readonly: (id: string, value: boolean) => void
+        /**Sets the form fields.
+         *
+         * ```typescript
+         * const formValue = {
+         *   fieldName: "value"
+         * }
+         * ```
+         */
         set: (id: string, data: Record<string, any>) => void
     }
 
@@ -28,7 +35,7 @@ export type $Arkform = {
         add: (id: string, clearInputs: boolean) => void
         remove: (id: string, index: number) => void
     }
-    config: Ref<ArkformConfig>
+    config: Ref<ArkformConfig<{}>>
 
     message: {
         set: (name: string, message: ArkMessage) => void
@@ -37,6 +44,88 @@ export type $Arkform = {
 
     state: ComputedRef<ArkForms>
 }
+
+type Primative = string | number | undefined | null | boolean
+
+export function $form<FormType extends Record<string, Primative> = any>(id: string) {
+    // check names for form
+    // check form id
+
+    return {
+        /**Clear the form, errors and inputs. */
+        clear: (data?: Partial<{ errors: boolean; inputs: boolean }>) => {},
+
+        /**Set the form fields. */
+        set: (data: Partial<FormType>) => {},
+
+        /**Submit the form. */
+        submit: (options?: {}) => {},
+
+        /**Change the readonly state. */
+        readonly: (value: boolean) => {},
+
+        /**Validate the form fields. */
+        validate: (): boolean => {
+            return false
+        },
+
+        /**A reactive reference to the form data. */
+        value: ref<FormType>(),
+
+        /**A reactive reference to the form errors. */
+        errors: ref<string[]>([]),
+
+        /**A reactive reference to all the forms data. */
+        state: ref<$Arkform>(),
+
+        /**A reactive reference to all the input names within the form. */
+        names: ref<string[]>([]),
+
+        /**A boolean value true only when all decendents meet their criteria. */
+        valid: ref<boolean>(false),
+
+        /**When the form is valid this will show the form data, else it will be null. */
+        validated: ref<FormType | null>(null),
+    }
+}
+
+export function $input(formId: string, inputId: string) {
+    return {
+        /**Clear the form, errors and inputs. */
+        clear: (data?: Partial<["errors", "inputs"]>) => {},
+
+        /**Set the form fields. */
+        set: (data: Partial<FormType>) => {},
+
+        /**Change the readonly state. */
+        readonly: (value: boolean) => {},
+
+        /**Validate the form fields. */
+        validate: (): boolean => {
+            return false
+        },
+
+        /**A reactive reference to the form data. */
+        value: ref<FormType>(),
+
+        /**A reactive reference to the form errors. */
+        errors: ref<string[]>([]),
+
+        /**A reactive reference to all the forms data. */
+        state: ref<$Arkform>(),
+
+        /**A reactive reference to the inputs name. */
+        name: ref<string[]>([]),
+
+        /**A boolean value true only when all decendents meet their criteria. */
+        valid: ref<boolean>(false),
+
+        /**When the form is valid this will show the form data, else it will be null. */
+        validated: ref<FormType | null>(null),
+    }
+}
+
+export function $group() {}
 
 export function useArkForm() {
     let $arkform: $Arkform = {
@@ -51,9 +140,7 @@ export function useArkForm() {
             const form = $forms.state[formId]
             if (!form) throw new Error(`useInput(): Form "${formId}" not found for "${id}"`)
 
-            const input: ArkInput = groupId
-                ? form.groups?.[groupId]?.inputs?.[inputId]
-                : form.inputs?.[inputId]
+            const input: ArkInput = groupId ? form.groups?.[groupId]?.inputs?.[inputId] : form.inputs?.[inputId]
 
             if (!input) {
                 throw new Error(`useInput(): Input "${inputId}" not found in form "${formId}"`)
@@ -149,9 +236,7 @@ export function useArkForm() {
             const { type, groupId, formId } = getIdsFromId(id)
 
             if (type !== "group" || !groupId || !formId) {
-                throw new Error(
-                    `useGroup(): Invalid ID structure for "${id}", this is not a valid group ID.`,
-                )
+                throw new Error(`useGroup(): Invalid ID structure for "${id}", this is not a valid group ID.`)
             }
 
             const form = $forms.state[formId]
@@ -274,10 +359,11 @@ export function useArkForm() {
                 bus.emit(`form-${id}:submit`)
             },
 
-            toggleReadonly: (id: string | undefined) => {
+            readonly: (id: string | undefined, value: boolean) => {
                 if (!id) return
+
                 const form = $arkform.useForm(id)
-                form.readOnly.value = !form.readOnly.value
+                form.readOnly.value = value
                 console.log(form.readOnly.value)
             },
 
@@ -327,9 +413,7 @@ export function useArkForm() {
                 const messageGroup = $arkform.useMessageSet(name)
 
                 if (!messageGroup.value) {
-                    console.warn(
-                        `[arkform]: Cannot set value undefined <ark-message-group /> with name (${name}).`,
-                    )
+                    console.warn(`[arkform]: Cannot set value undefined <ark-message-group /> with name (${name}).`)
                 }
 
                 messageGroup.value.push(message)

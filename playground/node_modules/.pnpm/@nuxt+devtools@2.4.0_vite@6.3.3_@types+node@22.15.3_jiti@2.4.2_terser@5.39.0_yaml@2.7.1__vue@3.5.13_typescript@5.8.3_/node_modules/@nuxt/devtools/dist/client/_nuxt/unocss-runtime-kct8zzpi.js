@@ -1,0 +1,1 @@
+import{k as e,l as s}from"./vendor/unocss-n30bmhn8.js";import"./vendor/json-editor-vue-exjsfanq.js";e({defaults:{presets:[s({prefix:["i-",""],collections:{},cdn:"https://esm.sh/",scale:1.2,extraProperties:{display:"inline-block","vertical-align":"middle"}})]},bypassDefined:!0});

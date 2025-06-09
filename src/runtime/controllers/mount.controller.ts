@@ -1,11 +1,9 @@
 import { useLocalStorage } from "@vueuse/core"
 import { useArkForm } from "../composables/useArkform"
-import { inputFactory, formFactory, groupFactory } from "../services/factory.service"
-import { arkMessage, type ArkMessage } from "../services/messages.service"
-import { getInputIdByName } from "../services/utils/getInputByName"
-import { getIdsFromId } from "../services/utils/uuid"
 import { useArkFormStore } from "../stores/forms"
-import { data } from "happy-dom/lib/PropertySymbol.js"
+import { getIdsFromId } from "../services/utils/uuid"
+import { inputFactory, formFactory, groupFactory } from "../services/factory.service"
+import { getInputIdByName } from "../services/utils/getInputByName"
 
 type MountInput = {
     Params: {
@@ -121,16 +119,10 @@ export const mountForm: Func<MountForm> = (P) => {
     }
 }
 
-function mountFormData(
-    formName: string | undefined,
-    formId: string,
-    defaultData?: Record<string, string>,
-) {
+function mountFormData(formName: string | undefined, formId: string, defaultData?: Record<string, string>) {
     console.log("hereeere")
     if (!formName) {
-        console.warn(
-            "[arkform]: To use the persist prop on a form you must give the form a unique name attribute. <ark-form name='login' />",
-        )
+        console.warn("[arkform]: To use the persist prop on a form you must give the form a unique name attribute. <ark-form name='login' />")
         return
     }
 
@@ -157,9 +149,7 @@ function mountFormData(
 
             if (!defaultData) {
                 Object.entries(storage.value).forEach(([fieldName, fieldValue]) => {
-                    const input = $arkform.useInput(
-                        getInputIdByName({ name: fieldName, id: formId }),
-                    )
+                    const input = $arkform.useInput(getInputIdByName({ name: fieldName, id: formId }))
 
                     if (input?.value) {
                         input.value.value = fieldValue
@@ -168,9 +158,7 @@ function mountFormData(
             } else {
                 Object.entries(data).forEach(([fieldName, fieldValue]) => {
                     try {
-                        const input = $arkform.useInput(
-                            getInputIdByName({ name: fieldName, id: formId }),
-                        )
+                        const input = $arkform.useInput(getInputIdByName({ name: fieldName, id: formId }))
 
                         if (input?.value) {
                             input.value.value = fieldValue
@@ -189,7 +177,7 @@ function mountFormData(
                     storage.value = structuredClone(val)
                     console.log(storage.value)
                 },
-                { deep: true },
+                { deep: true }
             )
         }
     })

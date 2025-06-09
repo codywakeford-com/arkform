@@ -20,12 +20,7 @@ export function generatePassword(id: string, length = 12) {
     // Ensure at least one of each type
     const getRandom = (str: string) => str[Math.floor(Math.random() * str.length)]
 
-    let password = [
-        getRandom(lowercase),
-        getRandom(uppercase),
-        getRandom(numbers),
-        getRandom(symbols),
-    ]
+    let password = [getRandom(lowercase), getRandom(uppercase), getRandom(numbers), getRandom(symbols)]
 
     for (let i = password.length; i < length; i++) {
         password.push(getRandom(allChars))

@@ -1,10 +1,9 @@
 # Arkfire
 
 ### Immediate
-- [ ] docRef 
-- [ ] colRef
 
-
+-   [ ] docRef
+-   [ ] colRef
 
 Arkfire is a fully typesafe abstraction for firestore. After working with vue fire for a bit I thought I could take it to the next level. Now you can define a firestore schema and work with your data will full typesafety.
 
@@ -12,7 +11,7 @@ The idea is to basically make firestore reactive like a reactive ref and capture
 
 ## Defining a schema
 
-Somewhere in your application you need to instantiate your `firestore` function bag. You need to do this in order to pass your Schema type into the package. This object will give you access to `Arkfires`'s `fireRef` functions. 
+Somewhere in your application you need to instantiate your `firestore` function bag. You need to do this in order to pass your Schema type into the package. This object will give you access to `Arkfires`'s `fireRef` functions.
 
 ```typescript
 // Special structure for defining store type.
@@ -37,8 +36,18 @@ export type FirestoreSchema = {
         }
     }
 
+    cusomers: {
+        $doc: Customer
+        $collections: {
+            invoices: {
+                $doc: Invoice
+                $collections: {}
+            }
+        }
+    }
+
     // .. More collections
-} & FirestoreSchemaBase
+}
 
 // Inject your type here:
 const firestore = defineFirestoreSchema<FirestoreSchema>()

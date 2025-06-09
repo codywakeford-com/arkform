@@ -1,6 +1,6 @@
 {
     "private": true,
-    "name": "my-module-playground",
+    "name": "a-name",
     "type": "module",
     "scripts": {
         "dev": "nuxi dev",

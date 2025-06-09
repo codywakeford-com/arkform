@@ -1,0 +1,50 @@
+{
+    "name": "arkform",
+    "root": "libs/arkform",
+    "tags": ["service"],
+    "targets": {
+        "emulators": {
+            "executor": "nx:run-commands",
+            "continuous": true,
+            "forwardAllArgs": true,
+            "options": {
+                "cwd": "libs/arkform",
+                "commands": [
+                    {
+                        "command": "npm run emulators"
+                    }
+                ]
+            }
+        },
+        "test": {
+            "continuous": true,
+            "executor": "nx:run-commands",
+
+            "options": {
+                "commands": [{ "command": "npm run test" }],
+                "cwd": "libs/arkform"
+            }
+        },
+        "dev": {
+            "executor": "nx:run-commands",
+
+            "options": {
+                "commands": [{ "command": "sleep 5 && npm run dev" }],
+                "cwd": "libs/arkform"
+            },
+            "dependsOn": ["emulators", "test"]
+        },
+
+        "deploy": {
+            "executor": "nx:run-commands",
+            "options": {
+                "cwd": "libs/arkform",
+                "commands": [{ "command": "firebase deploy" }]
+            },
+            "dependsOn": ["test:once", "build"]
+        }
+    },
+    "build": {
+        "executor": "@nx/js:tsc"
+    }
+}

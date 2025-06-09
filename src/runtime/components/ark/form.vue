@@ -3,9 +3,10 @@
         :name="name || ''"
         :data-ark-form="name"
         @submit.prevent
+        :readonly
         class="ark-form"
         :class="{
-            'read-only': !!readonlyRef.value,
+            'read-only': !!readonly,
             [`arkform-animation-${animation}`]: !!animationVal,
             [`${themeVal}`]: !!themeVal,
         }"
@@ -45,9 +46,6 @@ const formId = useFormId({
 })
 
 const formRef = computed(() => $arkform.useForm(formId.value))
-const readonlyRef = computed(() => {
-    return $arkform.useForm(formId.value).readOnly
-})
 
 const {
     componentId = "ark-form",

@@ -6,7 +6,7 @@ import { useArkForm } from "../composables/useArkform"
 import { arkDefaultAnimation } from "../style/animations/default"
 import { type } from "arktype"
 import { errorSets } from "../composables/config/errorSets"
-import type { ArkFirestore, DefineFirestore, defineFirestoreSchema } from "../composables/firestore"
+import type { ArkFirestore, defineFirestoreSchema, FirestoreSchema } from "../composables/firestore"
 
 export interface VueTransitions {
     [name: string]: VueTransition
@@ -19,16 +19,16 @@ export interface VueTransition {
     leave: (el: Element, done: () => void) => void
 }
 
-export type ArkformConfig<Schema extends FirestoreSchemaBase> = Partial<ArkformConfigFull<Schema>>
+export type ArkformConfig<Schema extends FirestoreSchema> = Partial<ArkformConfigFull<Schema>>
 
 export type FirebaseConfig = {
-    apiKey: string
-    authDomain: string
-    projectId: string
-    storageBucket: string
-    messagingSenderId: string
-    appId: string
-    measurementId?: string
+    apiKey: string | undefined
+    authDomain: string | undefined
+    projectId: string | undefined
+    storageBucket: string | undefined
+    messagingSenderId: string | undefined
+    appId: string | undefined
+    measurementId?: string | undefined
 }
 
 export type CustomSchema = {
@@ -47,20 +47,33 @@ export type CustomSchema = {
     }
 }
 
-export type ArkformConfigFull<Schema extends FirestoreSchemaBase> = {
+export type ArkformConfigFull<Schema extends FirestoreSchema> = {
     /**Root style dir */
     root: string
 
     arkfire: {
         enabled: boolean
         firebaseConfig: FirebaseConfig | null
-        firestore: ReturnType<typeof defineFirestoreSchema<Schema>>
 
-        ports: {
-            auth: number
-            firestore: number
-            hosting: number
-            storage: number
+        ports?: {
+            auth?: number
+            firestore?: number
+            hosting?: number
+            storage?: number
+        }
+    }
+
+    features: {
+        /**Toggle arkfire. */
+        arkfire: boolean
+
+        /**Toggle cloud tasks. */
+        tasks: boolean
+    }
+
+    permissions?: {
+        route?: {
+            [key: string]: string
         }
     }
 
@@ -107,7 +120,6 @@ export let arkConfigDefaults: ArkformConfigFull<{}> = {
     arkfire: {
         enabled: true,
         firebaseConfig: null,
-        firestore: {},
 
         ports: {
             auth: 9099,
@@ -115,6 +127,11 @@ export let arkConfigDefaults: ArkformConfigFull<{}> = {
             hosting: 5000,
             storage: 9199,
         },
+    },
+
+    features: {
+        arkfire: true,
+        tasks: true,
     },
 
     errors: {
@@ -129,15 +146,11 @@ export let arkConfigDefaults: ArkformConfigFull<{}> = {
     },
 }
 
-export function defineArkformConfig(userConfig?: ArkformConfig) {
-    console.log("userConfig", userConfig)
-
+export function defineArkformConfig(userConfig?: ArkformConfig<{}>) {
     const mergedConfig = merge({}, arkConfigDefaults, userConfig || {})
 
     const arkFormStore = useArkForm()
     Object.assign(arkFormStore.config.value, mergedConfig)
-
-    //console.log("[Arkform]: Final merged config", useArkForm().config.value)
 
     return useArkForm().config
 }
